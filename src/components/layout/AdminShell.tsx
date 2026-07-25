@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Navigate, NavLink, Outlet } from 'react-router-dom';
+import { Navigate, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { LogOut } from 'lucide-react';
 import { ConfirmDialog } from '../common/ConfirmDialog';
 
@@ -19,6 +19,7 @@ const links = [
 export function AdminShell() {
   const token = window.localStorage.getItem('prepnest_token');
   const [showLogout, setShowLogout] = useState(false);
+  const navigate = useNavigate();
 
   if (!token) {
     return <Navigate to="/login" replace />;
@@ -27,7 +28,7 @@ export function AdminShell() {
   const handleLogout = () => {
     localStorage.removeItem('prepnest_token');
     localStorage.removeItem('prepnest_user');
-    window.location.href = '/login';
+    navigate('/login', { replace: true });
   };
 
   return (
