@@ -5,10 +5,10 @@ import { ConfirmDialog } from '../common/ConfirmDialog';
 
 const links = [
   { to: '/', label: 'Dashboard' },
-  { to: '/gate-preparation', label: 'GATE Preparation' },
-  { to: '/aptitude-preparation', label: 'Aptitude Preparation' },
-  { to: '/interview-preparation', label: 'Interview Preparation' },
-  { to: '/technical-preparation', label: 'Technical Preparation' },
+  { to: '/preparation/gate', label: 'GATE Preparation' },
+  { to: '/preparation/aptitude', label: 'Aptitude Preparation' },
+  { to: '/preparation/interview', label: 'Interview Preparation' },
+  { to: '/preparation/technical', label: 'Technical Preparation' },
   { to: '/mock-tests', label: 'Mock Tests' },
   { to: '/daily-challenge', label: 'Daily Challenge' },
   { to: '/important-notifications', label: 'Important Notifications' },

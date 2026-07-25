@@ -10,6 +10,7 @@
     "lint": "eslint . --ext ts,tsx --max-warnings 0"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.101.4",
     "axios": "^1.11.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.542.0",

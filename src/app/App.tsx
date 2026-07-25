@@ -11,10 +11,8 @@ import { ResetPasswordPage } from '../pages/auth/ResetPasswordPage';
 import { CmsPage } from '../pages/cms/CmsPage';
 import { UsersPage } from '../pages/users/UsersPage';
 import { SettingsPage } from '../pages/settings/SettingsPage';
-import GatePreparationPage from '../pages/modules/gate-preparation';
-import AptitudePreparationPage from '../pages/modules/aptitude-preparation';
-import InterviewPreparationPage from '../pages/modules/interview-preparation';
-import TechnicalPreparationPage from '../pages/modules/technical-preparation';
+import PreparationModulePage from '../pages/preparation/PreparationModulePage';
+import TopicWorkspacePage from '../pages/preparation/TopicWorkspacePage';
 import MockTestsPage from '../pages/modules/mock-tests';
 import DailyChallengePage from '../pages/modules/daily-challenge';
 import ImportantNotificationsPage from '../pages/modules/important-notifications';
@@ -31,10 +29,8 @@ export default function App() {
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route element={<AdminShell />}>
           <Route path="/" element={<DashboardPage />} />
-          <Route path="/gate-preparation" element={<GatePreparationPage />} />
-          <Route path="/aptitude-preparation" element={<AptitudePreparationPage />} />
-          <Route path="/interview-preparation" element={<InterviewPreparationPage />} />
-          <Route path="/technical-preparation" element={<TechnicalPreparationPage />} />
+          <Route path="/preparation/:category" element={<PreparationModulePage />} />
+          <Route path="/preparation/:category/topics/:topicId" element={<TopicWorkspacePage />} />
           <Route path="/mock-tests" element={<MockTestsPage />} />
           <Route path="/daily-challenge" element={<DailyChallengePage />} />
           <Route path="/important-notifications" element={<ImportantNotificationsPage />} />

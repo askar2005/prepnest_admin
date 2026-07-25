@@ -59,23 +59,27 @@ export function CmsPage() {
       }
       if (field.type === 'checkbox') payload[field.name] = Boolean(payload[field.name]);
     }
-    if (editing) {
-      await apiClient.put(`/${resource}/${editing.id}`, payload);
-      pushToast(`${config.title} updated`, 'success');
-    } else {
-      await apiClient.post(`/${resource}`, payload);
-      pushToast(`${config.title} created`, 'success');
-    }
-    setEditing(null);
-    setForm({});
-    await load();
+    try {
+      if (editing) {
+        await apiClient.put(`/${resource}/${editing.id}`, payload);
+        pushToast(`${config.title} updated`, 'success');
+      } else {
+        await apiClient.post(`/${resource}`, payload);
+        pushToast(`${config.title} created`, 'success');
+      }
+      setEditing(null);
+      setForm({});
+      await load();
+    } catch (err: any) { pushToast(err?.response?.data?.message || err?.message || 'Save failed', 'error'); }
   };
 
   const remove = async (id: string) => {
     if (!window.confirm(`Delete this ${config.title.toLowerCase()}?`)) return;
-    await apiClient.delete(`/${resource}/${id}`);
-    pushToast(`${config.title} deleted`, 'success');
-    await load();
+    try {
+      await apiClient.delete(`/${resource}/${id}`);
+      pushToast(`${config.title} deleted`, 'success');
+      await load();
+    } catch (err: any) { pushToast(err?.response?.data?.message || err?.message || 'Delete failed', 'error'); }
   };
 
   return (
