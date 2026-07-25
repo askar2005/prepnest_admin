@@ -15,7 +15,8 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      const wasLoginRequest = error.config?.url?.includes('/auth/login');
+      const url = error.config?.url || '';
+      const wasLoginRequest = url.includes('/auth/login') || url.includes('/admin/login');
       if (!wasLoginRequest) {
         window.localStorage.removeItem('prepnest_token');
         window.localStorage.removeItem('prepnest_user');
