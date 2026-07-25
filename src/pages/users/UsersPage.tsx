@@ -19,18 +19,20 @@ export function UsersPage() {
   };
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold text-slate-900">Users</h1>
-      {users.map((user) => (
-        <div key={user.id} className="flex items-center justify-between rounded-[16px] border border-slate-200 p-4">
-          <div>
-            <div className="font-medium">{user.name}</div>
-            <div className="text-sm text-slate-500">{user.email}</div>
+      <h1 className="text-xl sm:text-2xl font-semibold text-slate-900">Users</h1>
+      <div className="space-y-3">
+        {users.map((user) => (
+          <div key={user.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-[16px] border border-slate-200 p-4">
+            <div className="min-w-0">
+              <div className="font-medium truncate">{user.name}</div>
+              <div className="text-sm text-slate-500 truncate">{user.email}</div>
+            </div>
+            <Button variant="secondary" onClick={() => toggleDisabled(user)} className="w-full sm:w-auto">
+              {user.disabledAt ? 'Enable' : 'Disable'}
+            </Button>
           </div>
-          <Button variant="secondary" onClick={() => toggleDisabled(user)}>
-            {user.disabledAt ? 'Enable' : 'Disable'}
-          </Button>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

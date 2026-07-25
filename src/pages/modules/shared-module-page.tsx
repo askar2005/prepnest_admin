@@ -126,14 +126,14 @@ export function SharedModulePage({ config }: { config: ModuleConfig }) {
   const addQuestion = () => setMcqs((current) => [...current, { ...EMPTY_QUESTION }]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">{config.title}</h1>
+        <h1 className="text-xl sm:text-2xl font-semibold text-slate-900">{config.title}</h1>
         <p className="mt-2 text-sm text-slate-500">{config.description}</p>
       </div>
 
-      <div className="grid gap-6 rounded-[16px] border border-slate-200 bg-white p-5 shadow-soft">
-        <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-6 rounded-[16px] border border-slate-200 bg-white p-4 sm:p-5 shadow-soft">
+        <div className="grid gap-4 sm:grid-cols-2">
           <label className="space-y-1">
             <span className="text-sm font-medium text-slate-700">Topic Name</span>
             <Input value={topicName} onChange={(e) => { setTopicName(e.target.value); setErrors((prev) => { const { ...rest } = prev; delete rest.topicName; return rest; }); }} placeholder="Enter topic name" />
@@ -144,7 +144,7 @@ export function SharedModulePage({ config }: { config: ModuleConfig }) {
             <TextArea value={description} onChange={(e) => { setDescription(e.target.value); setErrors((prev) => { const { ...rest } = prev; delete rest.description; return rest; }); }} placeholder="Topic description" />
             {errors.description ? <p className="text-xs text-red-500">{errors.description}</p> : null}
           </label>
-          <label className="space-y-1 md:col-span-2">
+          <label className="space-y-1 sm:col-span-2">
             <span className="text-sm font-medium text-slate-700">Upload Notes PDF</span>
             <Input
               type="file"
@@ -163,14 +163,14 @@ export function SharedModulePage({ config }: { config: ModuleConfig }) {
         </div>
 
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <h2 className="text-base font-semibold text-slate-900">MCQ Section</h2>
             <Button variant="secondary" onClick={addQuestion}>+ Add Another Question</Button>
           </div>
           {errors.mcqs ? <p className="text-xs text-red-500">{errors.mcqs}</p> : null}
           {mcqs.map((question, index) => (
-            <div key={index} className="grid gap-4 rounded-[16px] border border-slate-200 p-4 md:grid-cols-2">
-              <label className="space-y-1 md:col-span-2">
+            <div key={index} className="grid gap-4 rounded-[16px] border border-slate-200 p-4 sm:grid-cols-2">
+              <label className="space-y-1 sm:col-span-2">
                 <span className="text-sm font-medium text-slate-700">Question {index + 1}</span>
                 <TextArea value={question.question} onChange={(e) => updateQuestion(index, 'question', e.target.value, setMcqs)} placeholder="Enter question" />
               </label>

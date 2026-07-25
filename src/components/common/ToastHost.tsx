@@ -22,7 +22,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <div className="fixed right-4 top-4 z-50 space-y-2">
+      <div className="fixed left-4 right-4 top-4 z-50 space-y-2 md:left-auto md:right-4 md:w-auto">
         {toasts.map((toast) => (
           <div key={toast.id} className={`rounded-xl px-4 py-3 text-sm shadow-soft ${toast.tone === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}`}>
             {toast.message}

@@ -25,14 +25,14 @@ export function ConfirmDialog({ open, title, message, confirmLabel = 'Confirm', 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onCancel}>
-      <div className="w-full max-w-md rounded-[16px] border border-slate-200 bg-white p-6 shadow-soft" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={onCancel}>
+      <div className="w-full max-w-md rounded-[16px] border border-slate-200 bg-white p-6 shadow-soft mx-auto" onClick={(e) => e.stopPropagation()}>
         <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
         <p className="mt-2 text-sm text-slate-600">{message}</p>
         {children && <div className="mt-4">{children}</div>}
-        <div className="mt-6 flex justify-end gap-3">
-          <Button variant="secondary" onClick={onCancel} disabled={loading}>{cancelLabel}</Button>
-          <Button variant={variant} onClick={onConfirm} disabled={loading}>{loading ? 'Processing...' : confirmLabel}</Button>
+        <div className="mt-6 flex flex-col sm:flex-row justify-end gap-3">
+          <Button variant="secondary" onClick={onCancel} disabled={loading} className="w-full sm:w-auto">{cancelLabel}</Button>
+          <Button variant={variant} onClick={onConfirm} disabled={loading} className="w-full sm:w-auto">{loading ? 'Processing...' : confirmLabel}</Button>
         </div>
       </div>
     </div>

@@ -84,12 +84,12 @@ export function CmsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">{config.title}</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold text-slate-900">{config.title}</h1>
           <p className="mt-1 text-sm text-slate-500">{config.description}</p>
         </div>
-        <div className="flex w-full gap-3 md:w-auto">
+        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
           <Input value={query} onChange={(e) => { setQuery(e.target.value); setPage(1); }} placeholder={config.searchPlaceholder} />
           <Button variant="secondary" onClick={() => { setEditing(null); setForm({}); }}>
             New
@@ -97,42 +97,44 @@ export function CmsPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 rounded-[16px] border border-slate-200 bg-white p-5 shadow-soft md:grid-cols-2">
+      <div className="grid gap-4 rounded-[16px] border border-slate-200 bg-white p-4 sm:p-5 shadow-soft sm:grid-cols-2">
         {config.fields.map((field) => (
           <Field key={field.name} field={field} value={form[field.name] ?? ''} onChange={(value) => setForm((current) => ({ ...current, [field.name]: value }))} />
         ))}
-        <div className="md:col-span-2 flex gap-3">
+        <div className="sm:col-span-2 flex flex-wrap gap-3">
           <Button onClick={submit} disabled={loading}>{editing ? 'Update' : 'Create'}</Button>
           {editing ? <Button variant="secondary" onClick={() => { setEditing(null); setForm({}); }}>Cancel</Button> : null}
         </div>
       </div>
 
       <div className="overflow-hidden rounded-[16px] border border-slate-200 bg-white shadow-soft">
-        <table className="min-w-full">
-          <thead className="bg-slate-50">
-            <tr>
-              {columns.map((column) => <th key={column} className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">{column}</th>)}
-              <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item) => (
-              <tr key={item.id} className="border-t">
-                {columns.map((column) => <td key={column} className="px-4 py-3 text-sm text-slate-700">{String(item[column] ?? '')}</td>)}
-                <td className="px-4 py-3">
-                  <div className="flex gap-2">
-                    <Button variant="secondary" onClick={() => setEditing(item)}>Edit</Button>
-                    <Button variant="danger" onClick={() => remove(item.id)}>Delete</Button>
-                  </div>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead className="bg-slate-50">
+              <tr>
+                {columns.map((column) => <th key={column} className="whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">{column}</th>)}
+                <th className="whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {items.map((item) => (
+                <tr key={item.id} className="border-t">
+                  {columns.map((column) => <td key={column} className="px-4 py-3 text-sm text-slate-700 max-w-[200px] truncate">{String(item[column] ?? '')}</td>)}
+                  <td className="px-4 py-3">
+                    <div className="flex gap-2 flex-wrap">
+                      <Button variant="secondary" onClick={() => setEditing(item)}>Edit</Button>
+                      <Button variant="danger" onClick={() => remove(item.id)}>Delete</Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         {!items.length ? <div className="p-6 text-sm text-slate-500">No records found.</div> : null}
       </div>
 
-      <div className="flex items-center justify-between text-sm text-slate-600">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-sm text-slate-600">
         <div>
           Page {page} of {Math.max(1, Math.ceil(total / 10))}
         </div>
@@ -148,7 +150,7 @@ export function CmsPage() {
 function Field({ field, value, onChange }: { field: FieldConfig; value: any; onChange: (value: any) => void }) {
   const common = { value, onChange: (e: any) => onChange(e.target.value), placeholder: field.label, className: 'min-w-0' };
   return (
-    <label className="space-y-1 md:col-span-1">
+    <label className="space-y-1 sm:col-span-1">
       <span className="text-sm font-medium text-slate-700">{field.label}</span>
       {field.type === 'textarea' ? (
         <TextArea {...common} />

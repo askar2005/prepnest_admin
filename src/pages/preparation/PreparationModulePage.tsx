@@ -33,7 +33,7 @@ function StatCard({ label, value, sub }: { label: string; value: number | string
 }
 
 function EmptyState({ icon, title, desc, action, onAction }: { icon?: string; title: string; desc: string; action?: string; onAction?: () => void }) {
-  return <div className="flex flex-col items-center justify-center py-16 text-center"><div className="text-4xl mb-3">{icon || '📂'}</div><p className="text-lg font-medium text-slate-700">{title}</p><p className="text-sm text-slate-400 mt-1 mb-4">{desc}</p>{action && onAction && <Button onClick={onAction}>{action}</Button>}</div>;
+  return <div className="flex flex-col items-center justify-center py-12 sm:py-16 text-center"><div className="text-4xl mb-3">{icon || '📂'}</div><p className="text-lg font-medium text-slate-700">{title}</p><p className="text-sm text-slate-400 mt-1 mb-4">{desc}</p>{action && onAction && <Button onClick={onAction}>{action}</Button>}</div>;
 }
 
 function fileToDataUrl(file: File): Promise<string> {
@@ -47,7 +47,6 @@ export default function PreparationModulePage() {
   const [tab, setTab] = useState('dashboard');
   const [localLoading, setLocalLoading] = useState(false);
 
-  // data states
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [topics, setTopics] = useState<TopicItem[]>([]);
   const [notes, setNotes] = useState<NoteItem[]>([]);
@@ -58,7 +57,6 @@ export default function PreparationModulePage() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [settings, setSettings] = useState<CategorySettings | null>(null);
 
-  // confirm dialog
   const [confirm, setConfirm] = useState<{ id: string; action: string } | null>(null);
 
   const name = CATEGORY_LABELS[category || ''] || category?.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) || '';
@@ -86,16 +84,16 @@ export default function PreparationModulePage() {
   const onTabChange = (k: string) => setTab(k);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900">{name} Preparation</h1>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+        <h1 className="text-xl sm:text-2xl font-semibold text-slate-900">{name} Preparation</h1>
         {localLoading && <span className="text-xs text-slate-400 animate-pulse">Loading...</span>}
       </div>
 
-      <div className="flex flex-wrap gap-1 border-b border-slate-200 pb-2">
+      <div className="flex gap-1 border-b border-slate-200 pb-2 overflow-x-auto">
         {TABS.map((t) => (
           <button key={t.key} onClick={() => onTabChange(t.key)}
-            className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${tab === t.key ? 'bg-indigo-100 text-indigo-700 font-medium' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'}`}
+            className={`whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-sm rounded-lg transition-colors ${tab === t.key ? 'bg-indigo-100 text-indigo-700 font-medium' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'}`}
           >{t.label}</button>
         ))}
       </div>
@@ -132,7 +130,7 @@ function DashboardSection({ data, loading }: { data: DashboardData | null; loadi
   if (loading && !data) return <EmptyState icon="⏳" title="Loading..." desc="Fetching dashboard data" />;
   if (!data) return <EmptyState icon="📊" title="No Data Yet" desc="Data will appear here once you add content." />;
   return <div className="space-y-6">
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
       <StatCard label="Total Topics" value={data.topics} />
       <StatCard label="Total Notes" value={data.notes} />
       <StatCard label="Total PDFs" value={data.pdfs} />
@@ -142,13 +140,13 @@ function DashboardSection({ data, loading }: { data: DashboardData | null; loadi
       <StatCard label="Mock Tests" value={data.mockTests} />
       <StatCard label="User Attempts" value={data.totalAttempts} />
     </div>
-    <div className="grid gap-3 sm:grid-cols-3">
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
       <StatCard label="Average Score" value={data.averageScore.toFixed(1)} />
       <StatCard label="Highest Score" value={data.highestScore} />
       <StatCard label="Lowest Score" value={data.lowestScore} />
     </div>
     {data.topTopic && <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-soft"><p className="text-sm font-semibold text-slate-700">Most Popular Topic</p><p className="text-lg font-bold text-slate-900 mt-1">{data.topTopic.name}</p><p className="text-xs text-slate-400">{data.topTopic._count.studyMaterials} notes · {data.topTopic._count.mcqQuestions} MCQs</p></div>}
-    {data.recentUploads.length > 0 && <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-soft"><p className="text-sm font-semibold text-slate-700 mb-2">Recent Uploads</p><div className="space-y-1.5">{data.recentUploads.map((r, i) => <div key={i} className="flex items-center justify-between text-sm"><span className="text-slate-700">{r.title}</span><span className="text-xs text-slate-400">{r.type} · {fmtDate(r.createdAt)}</span></div>)}</div></div>}
+    {data.recentUploads.length > 0 && <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-soft"><p className="text-sm font-semibold text-slate-700 mb-2">Recent Uploads</p><div className="space-y-1.5">{data.recentUploads.map((r, i) => <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-sm"><span className="text-slate-700">{r.title}</span><span className="text-xs text-slate-400">{r.type} · {fmtDate(r.createdAt)}</span></div>)}</div></div>}
   </div>;
 }
 
@@ -183,16 +181,16 @@ function TopicsSection({ items, api, pushToast, onConfirm, category }: { items: 
   const startEdit = (t: TopicItem) => { setName(t.name); setDesc(t.description || ''); setEditId(t.id); setShowForm(true); };
 
   return <div className="space-y-4">
-    <div className="flex items-center gap-3 flex-wrap">
-      <Input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder="Search topics..." className="max-w-xs" />
+    <div className="flex flex-col sm:flex-row items-start gap-3">
+      <Input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder="Search topics..." className="w-full sm:max-w-xs" />
       <Button onClick={() => { resetForm(); setShowForm(true); }}>+ Create Topic</Button>
     </div>
 
     {showForm && <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-soft space-y-3">
       <p className="text-sm font-semibold text-slate-700">{editId ? 'Edit Topic' : 'Create Topic'}</p>
-      <div className="flex gap-3 flex-wrap">
-        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Topic name" className="max-w-xs" />
-        <Input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Description (optional)" className="max-w-sm" />
+      <div className="flex flex-col sm:flex-row gap-3">
+        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Topic name" className="w-full sm:max-w-xs" />
+        <Input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Description (optional)" className="w-full sm:max-w-sm" />
       </div>
       <div className="flex gap-2">
         <Button onClick={submit} disabled={busy || !name.trim()}>{busy ? 'Saving...' : editId ? 'Update' : 'Create'}</Button>
@@ -204,17 +202,17 @@ function TopicsSection({ items, api, pushToast, onConfirm, category }: { items: 
 
     {paged.length > 0 && <div className="overflow-x-auto rounded-xl border border-slate-200">
       <table className="w-full text-sm"><thead><tr className="bg-slate-50 text-left text-slate-600">
-        <th className="px-4 py-3 font-medium">Topic Name</th><th className="px-4 py-3 font-medium">Description</th>
-        <th className="px-4 py-3 font-medium text-center">Notes</th><th className="px-4 py-3 font-medium text-center">MCQs</th>
-        <th className="px-4 py-3 font-medium text-center">Videos</th><th className="px-4 py-3 font-medium text-center">Actions</th>
+        <th className="whitespace-nowrap px-4 py-3 font-medium">Topic Name</th><th className="whitespace-nowrap px-4 py-3 font-medium hidden md:table-cell">Description</th>
+        <th className="whitespace-nowrap px-4 py-3 font-medium text-center">Notes</th><th className="whitespace-nowrap px-4 py-3 font-medium text-center">MCQs</th>
+        <th className="whitespace-nowrap px-4 py-3 font-medium text-center hidden sm:table-cell">Videos</th><th className="whitespace-nowrap px-4 py-3 font-medium text-center">Actions</th>
       </tr></thead><tbody>
         {paged.map((t) => <tr key={t.id} className="border-t border-slate-100 hover:bg-slate-50">
           <td className="px-4 py-3 font-medium text-slate-900"><Link to={`/preparation/${category}/topics/${t.id}`} className="text-indigo-600 hover:underline">{t.name}</Link></td>
-          <td className="px-4 py-3 text-slate-500 max-w-[200px] truncate">{t.description || '—'}</td>
+          <td className="px-4 py-3 text-slate-500 max-w-[160px] truncate hidden md:table-cell">{t.description || '—'}</td>
           <td className="px-4 py-3 text-center">{t._count.studyMaterials}</td>
           <td className="px-4 py-3 text-center">{t._count.mcqQuestions}</td>
-          <td className="px-4 py-3 text-center">{t._count.videos}</td>
-          <td className="px-4 py-3 text-center"><div className="flex gap-2 justify-center">
+          <td className="px-4 py-3 text-center hidden sm:table-cell">{t._count.videos}</td>
+          <td className="px-4 py-3 text-center"><div className="flex gap-2 justify-center flex-wrap">
             <button onClick={() => startEdit(t)} className="text-xs text-indigo-600 hover:underline">Edit</button>
             <button onClick={() => onConfirm({ id: t.id, action: 'topic' })} className="text-xs text-red-500 hover:underline">Delete</button>
           </div></td>
@@ -254,7 +252,7 @@ function NotesSection({ items, api, pushToast, onConfirm }: { items: NoteItem[];
   };
 
   return <div className="space-y-4">
-    <div className="flex gap-3 flex-wrap"><Button onClick={() => setShowForm(!showForm)}>{showForm ? 'Cancel' : '+ Add Note/PDF'}</Button></div>
+    <div className="flex gap-3"><Button onClick={() => setShowForm(!showForm)}>{showForm ? 'Cancel' : '+ Add Note/PDF'}</Button></div>
 
     {showForm && <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-soft space-y-3">
       <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" />
@@ -268,14 +266,14 @@ function NotesSection({ items, api, pushToast, onConfirm }: { items: NoteItem[];
 
     {items.length > 0 && <div className="overflow-x-auto rounded-xl border border-slate-200">
       <table className="w-full text-sm"><thead><tr className="bg-slate-50 text-left text-slate-600">
-        <th className="px-4 py-3 font-medium">Title</th><th className="px-4 py-3 font-medium">Topic</th>
-        <th className="px-4 py-3 font-medium">Type</th><th className="px-4 py-3 font-medium">Date</th><th className="px-4 py-3 font-medium text-center">Actions</th>
+        <th className="whitespace-nowrap px-4 py-3 font-medium">Title</th><th className="whitespace-nowrap px-4 py-3 font-medium hidden sm:table-cell">Topic</th>
+        <th className="whitespace-nowrap px-4 py-3 font-medium">Type</th><th className="whitespace-nowrap px-4 py-3 font-medium hidden sm:table-cell">Date</th><th className="whitespace-nowrap px-4 py-3 font-medium text-center">Actions</th>
       </tr></thead><tbody>
         {items.map((n) => <tr key={n.id} className="border-t border-slate-100 hover:bg-slate-50">
-          <td className="px-4 py-3 font-medium text-slate-900">{n.title}</td>
-          <td className="px-4 py-3 text-slate-500">{n.topic?.name || '—'}</td>
+          <td className="px-4 py-3 font-medium text-slate-900 max-w-[200px] truncate">{n.title}</td>
+          <td className="px-4 py-3 text-slate-500 hidden sm:table-cell">{n.topic?.name || '—'}</td>
           <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded ${n.type === 'PDF' ? 'bg-amber-50 text-amber-700' : 'bg-blue-50 text-blue-700'}`}>{n.type}</span></td>
-          <td className="px-4 py-3 text-slate-500">{fmtDate(n.createdAt)}</td>
+          <td className="px-4 py-3 text-slate-500 hidden sm:table-cell">{fmtDate(n.createdAt)}</td>
           <td className="px-4 py-3 text-center"><div className="flex gap-2 justify-center">
             {n.externalUrl && <a href={n.externalUrl} target="_blank" rel="noreferrer" className="text-xs text-indigo-600 hover:underline">Preview</a>}
             <button onClick={() => onConfirm({ id: n.id, action: 'note' })} className="text-xs text-red-500 hover:underline">Delete</button>
@@ -311,15 +309,15 @@ function McqsSection({ items, api, pushToast, onConfirm }: { items: McqItem[]; a
   const startEdit = (m: McqItem) => { setQuestion(m.question); setA(m.optionA); setB(m.optionB); setC(m.optionC); setD(m.optionD); setCorrect(m.correctOption || 'A'); setExplanation(m.explanation || ''); setDifficulty((m.difficulty as any) || ''); setEditId(m.id); setShowForm(true); };
 
   return <div className="space-y-4">
-    <div className="flex gap-3 flex-wrap"><Button onClick={() => { resetForm(); setShowForm(true); }}>+ Add MCQ</Button></div>
+    <div className="flex gap-3"><Button onClick={() => { resetForm(); setShowForm(true); }}>+ Add MCQ</Button></div>
 
     {showForm && <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-soft space-y-3">
       <p className="text-sm font-semibold text-slate-700">{editId ? 'Edit MCQ' : 'Add MCQ'}</p>
       <TextArea value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="Question" className="min-h-[60px]" />
-      <div className="grid grid-cols-2 gap-3"><Input value={a} onChange={(e) => setA(e.target.value)} placeholder="Option A" /><Input value={b} onChange={(e) => setB(e.target.value)} placeholder="Option B" /><Input value={c} onChange={(e) => setC(e.target.value)} placeholder="Option C" /><Input value={d} onChange={(e) => setD(e.target.value)} placeholder="Option D" /></div>
-      <div className="flex gap-3 flex-wrap">
-        <Select value={correct} onChange={(e) => setCorrect(e.target.value)} className="max-w-[200px]"><option value="A">Correct: A</option><option value="B">Correct: B</option><option value="C">Correct: C</option><option value="D">Correct: D</option></Select>
-        <Select value={difficulty} onChange={(e) => setDifficulty(e.target.value as any)} className="max-w-[150px]"><option value="">Any Difficulty</option><option value="EASY">Easy</option><option value="MEDIUM">Medium</option><option value="HARD">Hard</option></Select>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3"><Input value={a} onChange={(e) => setA(e.target.value)} placeholder="Option A" /><Input value={b} onChange={(e) => setB(e.target.value)} placeholder="Option B" /><Input value={c} onChange={(e) => setC(e.target.value)} placeholder="Option C" /><Input value={d} onChange={(e) => setD(e.target.value)} placeholder="Option D" /></div>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <Select value={correct} onChange={(e) => setCorrect(e.target.value)} className="w-full sm:max-w-[200px]"><option value="A">Correct: A</option><option value="B">Correct: B</option><option value="C">Correct: C</option><option value="D">Correct: D</option></Select>
+        <Select value={difficulty} onChange={(e) => setDifficulty(e.target.value as any)} className="w-full sm:max-w-[150px]"><option value="">Any Difficulty</option><option value="EASY">Easy</option><option value="MEDIUM">Medium</option><option value="HARD">Hard</option></Select>
       </div>
       <TextArea value={explanation} onChange={(e) => setExplanation(e.target.value)} placeholder="Explanation (optional)" className="min-h-[50px]" />
       <div className="flex gap-2"><Button onClick={submit} disabled={busy || !question.trim()}>{busy ? 'Saving...' : editId ? 'Update' : 'Create'}</Button><Button variant="secondary" onClick={resetForm}>Cancel</Button></div>
@@ -329,11 +327,11 @@ function McqsSection({ items, api, pushToast, onConfirm }: { items: McqItem[]; a
 
     {items.length > 0 && <div className="space-y-2">
       {items.map((m) => <div key={m.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-soft">
-        <div className="flex items-start justify-between gap-4"><div className="flex-1"><p className="text-sm font-medium text-slate-900">{m.question}</p>
-          <div className="flex gap-4 mt-2 text-xs text-slate-500"><span className={m.correctOption === 'A' ? 'font-bold text-green-600' : ''}>A: {m.optionA}</span><span className={m.correctOption === 'B' ? 'font-bold text-green-600' : ''}>B: {m.optionB}</span><span className={m.correctOption === 'C' ? 'font-bold text-green-600' : ''}>C: {m.optionC}</span><span className={m.correctOption === 'D' ? 'font-bold text-green-600' : ''}>D: {m.optionD}</span></div>
+        <div className="flex flex-col sm:flex-row items-start justify-between gap-4"><div className="flex-1"><p className="text-sm font-medium text-slate-900">{m.question}</p>
+          <div className="flex flex-wrap gap-3 mt-2 text-xs text-slate-500"><span className={m.correctOption === 'A' ? 'font-bold text-green-600' : ''}>A: {m.optionA}</span><span className={m.correctOption === 'B' ? 'font-bold text-green-600' : ''}>B: {m.optionB}</span><span className={m.correctOption === 'C' ? 'font-bold text-green-600' : ''}>C: {m.optionC}</span><span className={m.correctOption === 'D' ? 'font-bold text-green-600' : ''}>D: {m.optionD}</span></div>
           {m.difficulty && <span className={`inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded ${m.difficulty === 'EASY' ? 'bg-green-50 text-green-600' : m.difficulty === 'HARD' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600'}`}>{m.difficulty}</span>}
         </div>
-        <div className="flex gap-2 shrink-0"><button onClick={() => startEdit(m)} className="text-xs text-indigo-600 hover:underline">Edit</button><button onClick={() => onConfirm({ id: m.id, action: 'mcq' })} className="text-xs text-red-500 hover:underline">Delete</button></div></div>
+        <div className="flex gap-2 shrink-0 mt-2 sm:mt-0"><button onClick={() => startEdit(m)} className="text-xs text-indigo-600 hover:underline">Edit</button><button onClick={() => onConfirm({ id: m.id, action: 'mcq' })} className="text-xs text-red-500 hover:underline">Delete</button></div></div>
       </div>)}
     </div>}
   </div>;
@@ -361,7 +359,7 @@ function VideosSection({ items, api, pushToast, onConfirm }: { items: VideoItem[
       <Button onClick={submit} disabled={busy || !title.trim() || !url.trim()}>{busy ? 'Adding...' : 'Add Video'}</Button>
     </div>}
     {items.length === 0 && !showForm && <EmptyState icon="🎬" title="No Videos Yet" desc="Add YouTube videos for this module." action="Add Video" onAction={() => setShowForm(true)} />}
-    {items.length > 0 && <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    {items.length > 0 && <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
       {items.map((v) => { const ytId = getYtId(v.youtubeUrl); return <div key={v.id} className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-soft">
         {ytId ? <img src={`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`} alt="" className="w-full h-40 object-cover" /> : <div className="w-full h-40 bg-slate-100 flex items-center justify-center text-slate-400 text-sm">No thumbnail</div>}
         <div className="p-3"><p className="text-sm font-medium text-slate-900 truncate">{v.title}</p><p className="text-xs text-slate-400 mt-1">{v.topic?.name || '—'}</p><div className="flex gap-2 mt-2"><button onClick={() => onConfirm({ id: v.id, action: 'video' })} className="text-xs text-red-500 hover:underline">Delete</button></div></div>
@@ -389,19 +387,19 @@ function PyqsSection({ items, api, pushToast, onConfirm }: { items: PyqItem[]; a
   return <div className="space-y-4">
     <Button onClick={() => setShowForm(!showForm)}>{showForm ? 'Cancel' : '+ Add PYQ'}</Button>
     {showForm && <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-soft space-y-3">
-      <div className="flex gap-3"><Input type="number" value={year} onChange={(e) => setYear(Number(e.target.value))} placeholder="Year" className="max-w-[120px]" /><Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title / Subject" className="flex-1" /></div>
+      <div className="flex flex-col sm:flex-row gap-3"><Input type="number" value={year} onChange={(e) => setYear(Number(e.target.value))} placeholder="Year" className="w-full sm:max-w-[120px]" /><Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title / Subject" className="flex-1" /></div>
       <Input type="file" accept=".pdf" onChange={(e) => setPdfFile(e.target.files?.[0] || null)} />
       <Button onClick={submit} disabled={busy || !title.trim()}>{busy ? 'Adding...' : 'Add'}</Button>
     </div>}
     {items.length === 0 && !showForm && <EmptyState icon="📄" title="No PYQs Yet" desc="Upload previous year question papers." action="Add PYQ" onAction={() => setShowForm(true)} />}
     {items.length > 0 && <div className="overflow-x-auto rounded-xl border border-slate-200">
       <table className="w-full text-sm"><thead><tr className="bg-slate-50 text-left text-slate-600">
-        <th className="px-4 py-3 font-medium">Year</th><th className="px-4 py-3 font-medium">Title</th><th className="px-4 py-3 font-medium">PDF</th><th className="px-4 py-3 font-medium text-center">Actions</th>
+        <th className="whitespace-nowrap px-4 py-3 font-medium">Year</th><th className="whitespace-nowrap px-4 py-3 font-medium">Title</th><th className="whitespace-nowrap px-4 py-3 font-medium hidden sm:table-cell">PDF</th><th className="whitespace-nowrap px-4 py-3 font-medium text-center">Actions</th>
       </tr></thead><tbody>
         {items.map((p) => <tr key={p.id} className="border-t border-slate-100 hover:bg-slate-50">
           <td className="px-4 py-3 font-semibold text-slate-900">{p.year}</td>
           <td className="px-4 py-3 text-slate-700">{p.title}</td>
-          <td className="px-4 py-3">{p.pdfUrl ? <a href={p.pdfUrl} target="_blank" rel="noreferrer" className="text-xs text-indigo-600 hover:underline">Preview</a> : <span className="text-xs text-slate-400">No file</span>}</td>
+          <td className="px-4 py-3 hidden sm:table-cell">{p.pdfUrl ? <a href={p.pdfUrl} target="_blank" rel="noreferrer" className="text-xs text-indigo-600 hover:underline">Preview</a> : <span className="text-xs text-slate-400">No file</span>}</td>
           <td className="px-4 py-3 text-center"><button onClick={() => onConfirm({ id: p.id, action: 'pyq' })} className="text-xs text-red-500 hover:underline">Delete</button></td>
         </tr>)}
       </tbody></table>
@@ -426,19 +424,19 @@ function MockTestsSection({ items, api, pushToast, onConfirm }: { items: MockTes
     {showForm && <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-soft space-y-3">
       <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Test name" />
       <TextArea value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Description" />
-      <div className="flex gap-3"><label className="space-y-1"><span className="text-xs text-slate-500">Duration (min)</span><Input type="number" value={duration} onChange={(e) => setDuration(Number(e.target.value))} className="max-w-[140px]" /></label><label className="space-y-1"><span className="text-xs text-slate-500">Negative Marking</span><Input type="number" step="0.5" value={negMarking} onChange={(e) => setNegMarking(Number(e.target.value))} className="max-w-[140px]" /></label></div>
+      <div className="flex flex-col sm:flex-row gap-3"><label className="space-y-1"><span className="text-xs text-slate-500">Duration (min)</span><Input type="number" value={duration} onChange={(e) => setDuration(Number(e.target.value))} className="w-full sm:max-w-[140px]" /></label><label className="space-y-1"><span className="text-xs text-slate-500">Negative Marking</span><Input type="number" step="0.5" value={negMarking} onChange={(e) => setNegMarking(Number(e.target.value))} className="w-full sm:max-w-[140px]" /></label></div>
       <Button onClick={submit} disabled={busy || !title.trim()}>{busy ? 'Creating...' : 'Create'}</Button>
     </div>}
     {items.length === 0 && !showForm && <EmptyState icon="📝" title="No Mock Tests Yet" desc="Create timed mock tests for students." action="Create Test" onAction={() => setShowForm(true)} />}
     {items.length > 0 && <div className="overflow-x-auto rounded-xl border border-slate-200">
       <table className="w-full text-sm"><thead><tr className="bg-slate-50 text-left text-slate-600">
-        <th className="px-4 py-3 font-medium">Test Name</th><th className="px-4 py-3 font-medium">Duration</th>
-        <th className="px-4 py-3 font-medium text-center">Questions</th><th className="px-4 py-3 font-medium text-center">Status</th><th className="px-4 py-3 font-medium text-center">Actions</th>
+        <th className="whitespace-nowrap px-4 py-3 font-medium">Test Name</th><th className="whitespace-nowrap px-4 py-3 font-medium hidden sm:table-cell">Duration</th>
+        <th className="whitespace-nowrap px-4 py-3 font-medium text-center hidden sm:table-cell">Questions</th><th className="whitespace-nowrap px-4 py-3 font-medium text-center">Status</th><th className="whitespace-nowrap px-4 py-3 font-medium text-center">Actions</th>
       </tr></thead><tbody>
         {items.map((m) => <tr key={m.id} className="border-t border-slate-100 hover:bg-slate-50">
           <td className="px-4 py-3 font-medium text-slate-900">{m.title}</td>
-          <td className="px-4 py-3 text-slate-500">{m.durationMinutes} min</td>
-          <td className="px-4 py-3 text-center">{m._count.questions}</td>
+          <td className="px-4 py-3 text-slate-500 hidden sm:table-cell">{m.durationMinutes} min</td>
+          <td className="px-4 py-3 text-center hidden sm:table-cell">{m._count.questions}</td>
           <td className="px-4 py-3 text-center"><span className={`text-xs px-2 py-0.5 rounded ${m.publishStatus === 'PUBLISHED' ? 'bg-green-50 text-green-700' : 'bg-slate-100 text-slate-600'}`}>{m.publishStatus}</span></td>
           <td className="px-4 py-3 text-center"><button onClick={() => onConfirm({ id: m.id, action: 'mockTest' })} className="text-xs text-red-500 hover:underline">Delete</button></td>
         </tr>)}
@@ -452,7 +450,7 @@ function AnalyticsSection({ data, loading }: { data: AnalyticsData | null; loadi
   if (loading && !data) return <EmptyState icon="⏳" title="Loading..." desc="Fetching analytics" />;
   if (!data) return <EmptyState icon="📈" title="No Analytics Yet" desc="Data will appear once students start attempting tests." />;
   return <div className="space-y-6">
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
       <StatCard label="Total Attempts" value={data.totalAttempts} />
       <StatCard label="Average Score" value={data.averageScore.toFixed(1)} />
       <StatCard label="Highest Score" value={data.highestScore} />
@@ -465,7 +463,7 @@ function AnalyticsSection({ data, loading }: { data: AnalyticsData | null; loadi
       {!data.topTopic && <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-400">No topic data available</div>}
       {!data.mostAttemptedTest && <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-400">No test data available</div>}
     </div>
-    {data.popularNotes.length > 0 && <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-soft"><p className="text-sm font-semibold text-slate-700 mb-2">Popular Notes</p><div className="space-y-1.5">{data.popularNotes.map((n, i) => <div key={i} className="flex justify-between text-sm"><span className="text-slate-700">{n.title}</span><span className="text-xs text-slate-400">{n.type}</span></div>)}</div></div>}
+    {data.popularNotes.length > 0 && <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-soft"><p className="text-sm font-semibold text-slate-700 mb-2">Popular Notes</p><div className="space-y-1.5">{data.popularNotes.map((n, i) => <div key={i} className="flex flex-col sm:flex-row sm:justify-between text-sm"><span className="text-slate-700">{n.title}</span><span className="text-xs text-slate-400">{n.type}</span></div>)}</div></div>}
   </div>;
 }
 
@@ -527,18 +525,15 @@ function SettingsSection({ data, api, pushToast }: { data: CategorySettings; api
   const getPreviewUrl = (url: string) => url.startsWith('http') ? url : window.location.origin + url;
 
   return <div className="grid lg:grid-cols-[1fr_400px] gap-6">
-    {/* Left: Form */}
     <div className="space-y-5">
-      {/* Basic Info */}
       <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-soft space-y-4">
         <p className="text-sm font-semibold text-slate-700">Basic Information</p>
         <label className="space-y-1"><span className="text-xs text-slate-500">Category Name</span><Input value={name} onChange={(e) => setName(e.target.value)} /></label>
         <label className="space-y-1"><span className="text-xs text-slate-500">Description</span><TextArea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} /></label>
-        <div className="flex gap-4"><label className="flex items-center gap-2"><input type="checkbox" checked={isEnabled} onChange={(e) => setIsEnabled(e.target.checked)} className="rounded border-slate-300" /><span className="text-sm text-slate-700">Enabled</span></label><label className="flex items-center gap-2"><input type="checkbox" checked={featured} onChange={(e) => setFeatured(e.target.checked)} className="rounded border-slate-300" /><span className="text-sm text-slate-700">Featured</span></label></div>
+        <div className="flex flex-wrap gap-4"><label className="flex items-center gap-2"><input type="checkbox" checked={isEnabled} onChange={(e) => setIsEnabled(e.target.checked)} className="rounded border-slate-300" /><span className="text-sm text-slate-700">Enabled</span></label><label className="flex items-center gap-2"><input type="checkbox" checked={featured} onChange={(e) => setFeatured(e.target.checked)} className="rounded border-slate-300" /><span className="text-sm text-slate-700">Featured</span></label></div>
         <label className="space-y-1"><span className="text-xs text-slate-500">Display Order</span><Input type="number" value={displayOrder} onChange={(e) => setDisplayOrder(Number(e.target.value))} className="max-w-[120px]" /></label>
       </div>
 
-      {/* Cover Image */}
       <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-soft space-y-4">
         <p className="text-sm font-semibold text-slate-700">Cover Image</p>
         {coverImage ? (
@@ -546,7 +541,7 @@ function SettingsSection({ data, api, pushToast }: { data: CategorySettings; api
             <div className="relative rounded-xl overflow-hidden bg-slate-100 aspect-video max-w-md">
               <img src={getPreviewUrl(coverImage)} alt="Cover" className="w-full h-full object-cover" />
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
                 {imageUploading ? 'Uploading...' : 'Replace Image'}
                 <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageUpload} className="hidden" disabled={imageUploading} />
@@ -563,10 +558,9 @@ function SettingsSection({ data, api, pushToast }: { data: CategorySettings; api
         )}
       </div>
 
-      {/* Theme */}
       <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-soft space-y-4">
         <p className="text-sm font-semibold text-slate-700">Theme</p>
-        <label className="space-y-1"><span className="text-xs text-slate-500">Custom HEX Color</span><div className="flex items-center gap-2"><input type="color" value={themeColor || '#6366f1'} onChange={(e) => setThemeColor(e.target.value)} className="w-10 h-10 rounded-lg border border-slate-200 cursor-pointer" /><Input value={themeColor} onChange={(e) => setThemeColor(e.target.value)} placeholder="#6366f1" className="flex-1" /></div></label>
+        <label className="space-y-1"><span className="text-xs text-slate-500">Custom HEX Color</span><div className="flex items-center gap-2"><input type="color" value={themeColor || '#6366f1'} onChange={(e) => setThemeColor(e.target.value)} className="w-10 h-10 rounded-lg border border-slate-200 cursor-pointer shrink-0" /><Input value={themeColor} onChange={(e) => setThemeColor(e.target.value)} placeholder="#6366f1" className="flex-1" /></div></label>
         <div className="space-y-2"><span className="text-xs text-slate-500">Gradient Color</span>
           <div className="flex flex-wrap gap-2">
             {GRADIENT_OPTIONS.map((g) => (
@@ -578,7 +572,6 @@ function SettingsSection({ data, api, pushToast }: { data: CategorySettings; api
         </div>
       </div>
 
-      {/* Icon Picker */}
       <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-soft space-y-3">
         <p className="text-sm font-semibold text-slate-700">Icon</p>
         <div className="flex flex-wrap gap-2">
@@ -590,11 +583,9 @@ function SettingsSection({ data, api, pushToast }: { data: CategorySettings; api
         </div>
       </div>
 
-      {/* Save */}
       <Button onClick={async () => { setBusy(true); try { await api.updateSettings({ name, description: description || null, isEnabled, featured, displayOrder, themeColor: themeColor || null, gradientColor, icon }); pushToast('Settings saved', 'success'); } catch (err: any) { pushToast(err?.response?.data?.message || err?.message || 'Failed', 'error'); } finally { setBusy(false); } }} disabled={busy}>{busy ? 'Saving...' : 'Save All Settings'}</Button>
     </div>
 
-    {/* Right: Live Preview */}
     <div className="space-y-5">
       <p className="text-sm font-semibold text-slate-700">Live Preview</p>
       <div className="rounded-xl border border-slate-200 bg-white shadow-soft overflow-hidden">
