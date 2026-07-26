@@ -36,11 +36,14 @@ export function NotesSection({ items, api, pushToast, onConfirm }: { items: any[
   };
 
   const uploadFile = async (file: File): Promise<string> => {
+    console.log('[Upload] file:', { name: file.name, type: file.type, size: file.size });
     setUploading(true);
     try {
       const form = new FormData();
       form.append('file', file);
+      console.log('[Upload] POST /files/upload');
       const { data } = await apiClient.post('/files/upload', form);
+      console.log('[Upload] response:', data);
       return data.url;
     } finally {
       setUploading(false);
@@ -53,9 +56,11 @@ export function NotesSection({ items, api, pushToast, onConfirm }: { items: any[
     try {
       let finalPdfUrl = pdfUrl;
       if (pdfFile) {
+        console.log('[Submit] Uploading file:', pdfFile.name, pdfFile.type, pdfFile.size);
         finalPdfUrl = await uploadFile(pdfFile);
       }
       const body: any = { title: title.trim(), pdfUrl: finalPdfUrl || null, isPublished };
+      console.log('[Submit] Saving note:', body);
       if (editId) {
         await api.updateNewNote(editId, body);
         pushToast('Note updated', 'success');
@@ -65,8 +70,11 @@ export function NotesSection({ items, api, pushToast, onConfirm }: { items: any[
       }
       resetForm();
       refreshData();
-    } catch (err: any) { pushToast(err?.response?.data?.message || err?.message || 'Save failed', 'error'); }
-    finally { setBusy(false); }
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || err?.response?.data?.error || err?.message || 'Save failed';
+      console.error('[Submit] Error:', err?.response?.status, msg, err?.response?.data || err);
+      pushToast(msg, 'error');
+    } finally { setBusy(false); }
   };
 
   const refreshData = () => {
@@ -179,7 +187,11 @@ export function NotesSection({ items, api, pushToast, onConfirm }: { items: any[
                     ref={fileRef}
                     type="file"
                     accept="application/pdf"
-                    onChange={(e) => setPdfFile(e.target.files?.[0] || null)}
+                    onChange={(e) => {
+                      const f = e.target.files?.[0] || null;
+                      if (f) console.log('[FilePicker] selected:', { name: f.name, type: f.type, size: f.size });
+                      setPdfFile(f);
+                    }}
                     className="block w-full text-sm text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                   />
                   {uploading && <Loader2 className="w-5 h-5 animate-spin text-indigo-600 shrink-0" />}

@@ -1,12 +1,19 @@
 import axios from 'axios';
 
-const raw = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+const isLocalDev = hostname === 'localhost' || hostname === '127.0.0.1';
+const productionApiUrl = 'https://prednest-backend-e45z.onrender.com/api';
+const devFallback = 'http://localhost:4000/api';
+const fallback = isLocalDev ? devFallback : productionApiUrl;
+
+const raw = import.meta.env.VITE_API_URL || fallback;
 // Safety net: ensure base URL always ends with /api
 const base = raw.replace(/\/+$/, '');
 const finalBaseURL = base.endsWith('/api') ? base : `${base}/api`;
 
 // eslint-disable-next-line no-console
-console.log('[API Client] VITE_API_URL:', raw);
+console.log('[API Client] VITE_API_URL:', import.meta.env.VITE_API_URL || '(not set)');
+console.log('[API Client] hostname:', hostname, '→ fallback:', fallback);
 console.log('[API Client] Final baseURL:', finalBaseURL);
 
 export const apiClient = axios.create({
