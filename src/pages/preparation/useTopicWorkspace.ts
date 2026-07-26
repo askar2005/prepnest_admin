@@ -15,11 +15,8 @@ export interface TopicDetail {
   _count: { studyMaterials: number; mcqQuestions: number; videos: number };
 }
 
-export interface NoteAttachment {
-  id: string; noteId: string; fileName: string; originalName: string; fileType: string; fileSize: number | null; fileUrl: string; createdAt: string;
-}
-export interface NoteItem { id: string; title: string; type: string; content: string | null; externalUrl: string | null; searchText: string | null; tagsString: string | null; fileSize: string | null; createdAt: string; attachments?: NoteAttachment[]; description?: string | null; tags?: string | null; }
-export interface McqItem { id: string; question: string; optionA: string; optionB: string; optionC: string; optionD: string; correctOption: string; explanation: string | null; difficulty: string | null; createdAt: string; }
+export interface NoteItem { id: string; title: string; pdfUrl: string | null; isPublished: boolean; createdAt: string; }
+export interface McqItem { id: string; question: string; optionA: string; optionB: string; optionC: string; optionD: string; correctOption: string; explanation: string | null; difficulty: string | null; isPublished: boolean; createdAt: string; }
 export interface VideoItem { id: string; title: string; youtubeUrl: string; thumbnail: string | null; duration: number | null; description: string | null; tags: string | null; createdAt: string; }
 export interface PyqItem { id: string; year: number; title: string; pdfUrl: string | null; description: string | null; }
 export interface MockTestItem { id: string; title: string; description: string; durationMinutes: number; negativeMarking: number; publishStatus: string; createdAt: string; _count: { questions: number; results: number }; }
@@ -74,13 +71,13 @@ export function useTopicWorkspace(category: string, topicId: string) {
     createMockTestWithQuestions: (body: any) => mutate('post', `${base}/mock-tests/with-questions`, body),
     getResources: () => fetch<{ items: ResourceItem[]; total: number }>(`${base}/resources`),
     getAnalytics: () => fetch<TopicAnalyticsData>(`${base}/analytics`),
-    // New Note model APIs
-    getNewNotes: () => fetch<NoteItem[]>(`/api/topics/${topicId}/notes`),
-    getNewNote: (id: string) => fetch<NoteItem>(`/api/notes/${id}`),
-    createNewNote: (body: { title: string; content?: string; description?: string; tags?: string }) => mutate('post', `/api/topics/${topicId}/notes`, body),
-    updateNewNote: (id: string, body: any) => mutate('put', `/api/notes/${id}`, body),
+    // Note APIs (new model)
+    getNewNotes: async () => {
+      const { items } = await fetch<{ items: NoteItem[]; total: number }>(`/api/topics/${topicId}/notes`);
+      return items;
+    },
+    createNewNote: (body: { title: string; pdfUrl?: string | null; isPublished?: boolean }) => mutate<NoteItem>('post', `/api/topics/${topicId}/notes`, body),
+    updateNewNote: (id: string, body: { title?: string; pdfUrl?: string | null; isPublished?: boolean }) => mutate<NoteItem>('put', `/api/notes/${id}`, body),
     deleteNewNote: (id: string) => mutate('delete', `/api/notes/${id}`),
-    uploadNoteAttachment: (noteId: string, formData: FormData) => mutate('post', `/api/notes/upload?noteId=${noteId}`, formData),
-    deleteNoteAttachment: (attachmentId: string) => mutate('delete', `/api/notes/attachments/${attachmentId}`),
   };
 }
