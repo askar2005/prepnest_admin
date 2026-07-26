@@ -84,7 +84,8 @@ export function usePreparation(category: string) {
     uploadCategoryImage: async (file: File): Promise<CategorySettings> => {
       const form = new FormData();
       form.append('coverImage', file);
-      const { data } = await apiClient.post(`${base}/image`, form, { headers: { 'Content-Type': 'multipart/form-data' } });
+      // Do NOT set Content-Type — Axios auto-sets multipart/form-data with boundary for FormData
+      const { data } = await apiClient.post(`${base}/image`, form);
       return data as CategorySettings;
     },
     deleteCategoryImage: () => mutate<CategorySettings>('delete', `${base}/image`),
