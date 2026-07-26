@@ -73,11 +73,11 @@ export function useTopicWorkspace(category: string, topicId: string) {
     getAnalytics: () => fetch<TopicAnalyticsData>(`${base}/analytics`),
     // Note APIs (new model)
     getNewNotes: async () => {
-      const { items } = await fetch<{ items: NoteItem[]; total: number }>(`/api/topics/${topicId}/notes`);
+      const { items } = await fetch<{ items: NoteItem[]; total: number }>(`/topics/${topicId}/notes`);
       return items;
     },
-    createNewNote: (body: { title: string; pdfUrl?: string | null; isPublished?: boolean }) => mutate<NoteItem>('post', `/api/topics/${topicId}/notes`, body),
-    updateNewNote: (id: string, body: { title?: string; pdfUrl?: string | null; isPublished?: boolean }) => mutate<NoteItem>('put', `/api/notes/${id}`, body),
-    deleteNewNote: (id: string) => mutate('delete', `/api/notes/${id}`),
+    createNewNote: (body: { title: string; pdfUrl?: string | null; isPublished?: boolean }) => mutate<NoteItem>('post', `/topics/${topicId}/notes`, body),
+    updateNewNote: (id: string, body: { title?: string; pdfUrl?: string | null; isPublished?: boolean }) => mutate<NoteItem>('put', `/notes/${id}`, body),
+    deleteNewNote: (id: string) => mutate('delete', `/notes/${id}`),
   };
 }

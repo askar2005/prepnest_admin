@@ -40,7 +40,7 @@ export function NotesSection({ items, api, pushToast, onConfirm }: { items: any[
     try {
       const form = new FormData();
       form.append('file', file);
-      const { data } = await apiClient.post('/api/files/upload', form);
+      const { data } = await apiClient.post('/files/upload', form);
       return data.url;
     } finally {
       setUploading(false);
