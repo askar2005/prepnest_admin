@@ -28,9 +28,8 @@ export interface AnalyticsData {
 }
 
 export interface CategorySettings {
-  id: string; name: string; slug: string; description: string | null;
-  coverImage: string | null; gradientColor: string | null; icon: string | null;
-  featured: boolean; displayOrder: number; isEnabled: boolean; themeColor: string | null;
+  id: string; name: string; slug: string;
+  coverImage: string | null;
 }
 
 export function usePreparation(category: string) {

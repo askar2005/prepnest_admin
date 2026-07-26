@@ -14,6 +14,15 @@ export const apiClient = axios.create({
   withCredentials: true,
 });
 
+const BACKEND_ORIGIN = finalBaseURL.replace(/\/api\/?$/, '');
+
+export function resolveImageUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  if (url.startsWith('/')) return BACKEND_ORIGIN + url;
+  return url;
+}
+
 apiClient.interceptors.request.use((config) => {
   console.log(`[API Request] ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);
   const token = window.localStorage.getItem('prepnest_token');

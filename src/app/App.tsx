@@ -14,7 +14,7 @@ import { SettingsPage } from '../pages/settings/SettingsPage';
 import PreparationModulePage from '../pages/preparation/PreparationModulePage';
 import TopicWorkspacePage from '../pages/preparation/TopicWorkspacePage';
 import MockTestsPage from '../pages/modules/mock-tests';
-import DailyChallengePage from '../pages/modules/daily-challenge';
+import DailyChallengeManagementPage from '../pages/daily-challenge/DailyChallengeManagementPage';
 import ImportantNotificationsPage from '../pages/modules/important-notifications';
 
 export default function App() {
@@ -32,7 +32,7 @@ export default function App() {
           <Route path="/preparation/:category" element={<PreparationModulePage />} />
           <Route path="/preparation/:category/topics/:topicId" element={<TopicWorkspacePage />} />
           <Route path="/mock-tests" element={<MockTestsPage />} />
-          <Route path="/daily-challenge" element={<DailyChallengePage />} />
+          <Route path="/daily-challenge" element={<DailyChallengeManagementPage />} />
           <Route path="/important-notifications" element={<ImportantNotificationsPage />} />
           <Route path="/cms/:resource" element={<CmsPage />} />
           <Route path="/users" element={<UsersPage />} />

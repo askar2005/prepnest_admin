@@ -2,10 +2,11 @@ import { useParams, Link } from 'react-router-dom';
 import { useState, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '../../components/common/ToastHost';
-import { useTopicWorkspace, type TopicDetail, type MockTestItem } from './useTopicWorkspace';
-import McqBuilderSection from './McqBuilderSection';
+import { useTopicWorkspace, type TopicDetail } from './useTopicWorkspace';
+import { NotesSection } from './NotesSection';
+import { McqsSection } from './McqsSection';
+import { PyqsSection } from './PyqsSection';
 import MockTestBuilderSection from './MockTestBuilderSection';
-import NotesEditorSection from './NotesEditorSection';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { TextArea } from '../../components/ui/TextArea';
@@ -45,12 +46,12 @@ export default function TopicWorkspacePage() {
 
   const { data: topic } = useQuery({ queryKey: ['topic', topicId], queryFn: () => api.getTopic(), staleTime: 60000 });
   const { data: dashboard, isLoading: dLoading } = useQuery({ queryKey: ['topic-dash', topicId], queryFn: () => api.getDashboard(), enabled: tab === 'dashboard' });
-  const { data: notes, refetch: refetchNotes } = useQuery({ queryKey: ['topic-notes', topicId], queryFn: () => api.getNewNotes(), enabled: tab === 'notes' });
-  const { data: mcqs, refetch: refetchMcqs } = useQuery({ queryKey: ['topic-mcqs', topicId], queryFn: () => api.getMcqs().then(d => d.items), enabled: tab === 'mcqs' });
-  const { data: videos, refetch: refetchVideos } = useQuery({ queryKey: ['topic-videos', topicId], queryFn: () => api.getVideos().then(d => d.items), enabled: tab === 'videos' });
-  const { data: pyqs, refetch: refetchPyqs } = useQuery({ queryKey: ['topic-pyqs', topicId], queryFn: () => api.getPyqs().then(d => d.items), enabled: tab === 'pyqs' });
-  const { data: mockTests, refetch: refetchMT } = useQuery({ queryKey: ['topic-mocktests', topicId], queryFn: () => api.getMockTests().then(d => d.items), enabled: tab === 'mock-tests' });
-  const { data: resources, refetch: refetchResources } = useQuery({ queryKey: ['topic-resources', topicId], queryFn: () => api.getResources().then(d => d.items), enabled: tab === 'resources' });
+  const { data: notes, isLoading: notesLoading } = useQuery({ queryKey: ['topic-notes', topicId], queryFn: () => api.getNewNotes(), enabled: tab === 'notes' });
+  const { data: mcqs, isLoading: mcqsLoading } = useQuery({ queryKey: ['topic-mcqs', topicId], queryFn: () => api.getMcqs().then(d => d.items), enabled: tab === 'mcqs' });
+  const { data: videos, isLoading: videosLoading } = useQuery({ queryKey: ['topic-videos', topicId], queryFn: () => api.getVideos().then(d => d.items), enabled: tab === 'videos' });
+  const { data: pyqs, isLoading: pyqsLoading } = useQuery({ queryKey: ['topic-pyqs', topicId], queryFn: () => api.getPyqs().then(d => d.items), enabled: tab === 'pyqs' });
+  const { data: mockTests, isLoading: mockTestsLoading } = useQuery({ queryKey: ['topic-mocktests', topicId], queryFn: () => api.getMockTests().then(d => d.items), enabled: tab === 'mock-tests' });
+  const { data: resources, isLoading: resourcesLoading } = useQuery({ queryKey: ['topic-resources', topicId], queryFn: () => api.getResources().then(d => d.items), enabled: tab === 'resources' });
   const { data: analytics, isLoading: aLoading } = useQuery({ queryKey: ['topic-analytics', topicId], queryFn: () => api.getAnalytics(), enabled: tab === 'analytics' });
 
   const deleteItem = useCallback(async (id: string, action: string) => {
@@ -80,10 +81,10 @@ export default function TopicWorkspacePage() {
       </div>
 
       {tab === 'dashboard' && <DashboardSection data={dashboard} loading={dLoading} />}
-      {tab === 'notes' && notes && <NotesEditorSection items={notes} api={api} />}
-      {tab === 'mcqs' && mcqs && <McqBuilderSection items={mcqs} api={api} />}
-      {tab === 'videos' && <VideosSection items={videos || []} api={api} pushToast={pushToast} onConfirm={setConfirm} />}
-      {tab === 'pyqs' && <PyqsSection items={pyqs || []} api={api} pushToast={pushToast} onConfirm={setConfirm} />}
+        {tab === 'notes' && notes && <NotesSection items={notes} api={api} pushToast={pushToast} onConfirm={setConfirm} />}
+       {tab === 'mcqs' && mcqs && <McqsSection items={mcqs} api={api} />}
+       {tab === 'videos' && <VideosSection items={videos || []} api={api} pushToast={pushToast} onConfirm={setConfirm} />}
+       {tab === 'pyqs' && <PyqsSection items={pyqs || []} api={api} pushToast={pushToast} onConfirm={setConfirm} />}
       {tab === 'mock-tests' && <MockTestBuilderSection items={mockTests || []} api={api} />}
       {tab === 'resources' && <ResourcesSection items={resources || []} />}
       {tab === 'analytics' && <AnalyticsSection data={analytics} loading={aLoading} />}
@@ -125,21 +126,6 @@ function VideosSection({ items, api, pushToast, onConfirm }: { items: any[]; api
     {showForm && <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-soft space-y-3"><Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Video title" /><Input value={ytUrl} onChange={(e) => setYtUrl(e.target.value)} placeholder="YouTube URL" /><TextArea value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Description (optional)" /><Button onClick={submit} disabled={busy}>{busy ? 'Adding...' : 'Add'}</Button></div>}
     {items.length === 0 && !showForm && <EmptyState icon="🎬" title="No Videos" desc="Add YouTube videos." />}
     {items.length > 0 && <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">{items.map((v: any) => { const ytId = getYtId(v.youtubeUrl); return <div key={v.id} className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-soft">{ytId ? <img src={`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`} alt="" className="w-full h-40 object-cover" /> : <div className="w-full h-40 bg-slate-100 flex items-center justify-center text-slate-400">No thumbnail</div>}<div className="p-3"><p className="text-sm font-medium text-slate-900 truncate">{v.title}</p><div className="flex gap-2 mt-2"><button onClick={() => onConfirm({ id: v.id, action: 'video' })} className="text-xs text-red-500 hover:underline">Delete</button></div></div></div>; })}</div>}
-  </div>;
-}
-
-/* ===== PYQs ===== */
-function PyqsSection({ items, api, pushToast, onConfirm }: { items: any[]; api: any; pushToast: any; onConfirm: (c: any) => void }) {
-  const [showForm, setShowForm] = useState(false); const [year, setYear] = useState(new Date().getFullYear()); const [title, setTitle] = useState(''); const [desc, setDesc] = useState(''); const [pdfFile, setPdfFile] = useState<File | null>(null); const [busy, setBusy] = useState(false);
-  const fileToDataUrl = (f: File): Promise<string> => new Promise((resolve, reject) => { const r = new FileReader(); r.onload = () => resolve(String(r.result)); r.onerror = reject; r.readAsDataURL(f); });
-  const submit = async () => { if (!title.trim() || !year) return; setBusy(true); try { const body: any = { year: Number(year), title: title.trim(), description: desc.trim() || null }; if (pdfFile) body.pdfUrl = await fileToDataUrl(pdfFile); await api.createPyq(body); pushToast('PYQ added', 'success'); setTitle(''); setYear(new Date().getFullYear()); setPdfFile(null); setShowForm(false); } catch (err: any) { pushToast(err?.response?.data?.message || 'Failed', 'error'); } finally { setBusy(false); } };
-  const [page, setPage] = useState(1); const perPage = 10; const paged = items.slice((page - 1) * perPage, page * perPage); const totalPages = Math.ceil(items.length / perPage);
-  return <div className="space-y-4">
-    <Button onClick={() => setShowForm(!showForm)}><Plus className="w-4 h-4 mr-1" />{showForm ? 'Cancel' : 'Add PYQ'}</Button>
-    {showForm && <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-soft space-y-3"><div className="flex flex-col sm:flex-row gap-3"><Input type="number" value={year} onChange={(e) => setYear(Number(e.target.value))} className="w-full sm:max-w-[120px]" placeholder="Year" /><Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" className="flex-1" /></div><TextArea value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Description (optional)" /><Input type="file" accept=".pdf" onChange={(e) => setPdfFile(e.target.files?.[0] || null)} /><Button onClick={submit} disabled={busy}>{busy ? 'Adding...' : 'Add'}</Button></div>}
-    {items.length === 0 && !showForm && <EmptyState icon="📄" title="No PYQs" desc="Upload previous year papers." />}
-    {items.length > 0 && <div className="overflow-x-auto rounded-xl border border-slate-200"><table className="w-full text-sm"><thead><tr className="bg-slate-50 text-left text-slate-600"><th className="whitespace-nowrap px-4 py-3 font-medium">Year</th><th className="whitespace-nowrap px-4 py-3 font-medium">Title</th><th className="whitespace-nowrap px-4 py-3 font-medium hidden sm:table-cell">Actions</th></tr></thead><tbody>{paged.map((p: any) => <tr key={p.id} className="border-t border-slate-100 hover:bg-slate-50"><td className="px-4 py-3 font-semibold">{p.year}</td><td className="px-4 py-3">{p.title}</td><td className="px-4 py-3 hidden sm:table-cell"><button onClick={() => onConfirm({ id: p.id, action: 'pyq' })} className="text-xs text-red-500 hover:underline">Delete</button></td></tr>)}</tbody></table></div>}
-    {totalPages > 1 && <div className="flex justify-center gap-2">{Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => <button key={p} onClick={() => setPage(p)} className={`px-3 py-1 text-sm rounded ${page === p ? 'bg-indigo-100 text-indigo-700' : 'text-slate-500 hover:bg-slate-100'}`}>{p}</button>)}</div>}
   </div>;
 }
 
