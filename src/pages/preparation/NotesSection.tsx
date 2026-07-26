@@ -54,7 +54,7 @@ export function NotesSection({ items, api, pushToast, onConfirm }: { items: any[
     }
     try {
       const response = await apiClient.post('/files/upload', form, {
-        // NOT setting Content-Type — Axios auto-sets multipart/form-data with boundary for FormData
+        timeout: 120000, // 2 min — mobile uploads can be slow
       });
       console.log('=== UPLOAD DEBUG (after request) ===');
       console.log('[Upload] HTTP status:', response.status);
