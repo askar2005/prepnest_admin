@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, Loader2, AlertTriangle } from 'lucide-react';
 import { apiClient } from '../../api/client';
@@ -11,35 +11,53 @@ export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const submittingRef = useRef(false);
   const sessionExpired = window.sessionStorage.getItem('prepnest_session_expired');
   if (sessionExpired) window.sessionStorage.removeItem('prepnest_session_expired');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('[LOGIN-PAGE] handleSubmit called');
+    if (submittingRef.current) {
+      console.log('[LOGIN-PAGE] DUPLICATE SUBMIT BLOCKED — already submitting');
+      return;
+    }
     setError('');
     if (!form.email.trim()) { setError('Email is required'); return; }
     if (!form.password) { setError('Password is required'); return; }
     setLoading(true);
+    submittingRef.current = true;
+    console.log('[LOGIN-PAGE] sending POST /admin/login — email:', form.email);
     try {
       const { data } = await apiClient.post('/admin/login', form);
+      console.log('[LOGIN-PAGE] === LOGIN SUCCESS === token stored, admin:', data.admin?.email);
       window.localStorage.setItem('prepnest_token', data.token);
       window.localStorage.setItem('prepnest_user', JSON.stringify(data.admin));
+      console.log('[LOGIN-PAGE] === REDIRECT === navigating to /');
       navigate('/');
     } catch (err: any) {
       const status = err?.response?.status;
       const details = err?.response?.data?.details;
-      let msg = err?.response?.data?.message || 'Login failed';
+      const serverMsg = err?.response?.data?.message;
+      console.log('[LOGIN-PAGE] === LOGIN FAILED === status:', status, 'message:', serverMsg, 'details:', details);
+      console.log('[LOGIN-PAGE] request URL:', err?.config?.url);
+      console.log('[LOGIN-PAGE] response data:', JSON.stringify(err?.response?.data));
+      console.log('[LOGIN-PAGE] full error:', err);
+      let msg = serverMsg || 'Login failed';
       if (details && typeof details === 'object') {
         const msgs = Object.values(details).flat().join('; ');
         if (msgs) msg = msgs;
       }
-      if (status === 403 && msg.includes('verify your email')) {
+      if (status === 403 && serverMsg?.includes('verify your email')) {
+        console.log('[LOGIN-PAGE] email not verified, redirecting to /verify-email');
         navigate(`/verify-email?email=${encodeURIComponent(form.email)}`);
         return;
       }
       setError(msg);
     } finally {
+      console.log('[LOGIN-PAGE] login attempt finished');
       setLoading(false);
+      submittingRef.current = false;
     }
   };
 

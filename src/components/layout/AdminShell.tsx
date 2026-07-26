@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Navigate, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { LogOut, Menu, X } from 'lucide-react';
 import { ConfirmDialog } from '../common/ConfirmDialog';
+import { apiClient } from '../../api/client';
 
 const links = [
   { to: '/', label: 'Dashboard' },
@@ -23,12 +24,22 @@ export function AdminShell() {
   const navigate = useNavigate();
 
   if (!token) {
+    console.log('[ADMIN-SHELL] no token, redirecting to /login');
     return <Navigate to="/login" replace />;
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    console.log('[ADMIN-SHELL] handleLogout called');
+    try {
+      console.log('[ADMIN-SHELL] calling POST /admin/logout');
+      await apiClient.post('/admin/logout');
+      console.log('[ADMIN-SHELL] backend logout successful');
+    } catch (err) {
+      console.log('[ADMIN-SHELL] backend logout error (ignoring):', err);
+    }
     localStorage.removeItem('prepnest_token');
     localStorage.removeItem('prepnest_user');
+    console.log('[ADMIN-SHELL] === LOGOUT COMPLETE === token removed, navigating to /login');
     navigate('/login', { replace: true });
   };
 
