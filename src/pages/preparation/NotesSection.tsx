@@ -6,7 +6,7 @@ import { NoteCard } from '../../components/common/NoteCard';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Plus, FileText, Upload, X, Loader2 } from 'lucide-react';
-import { apiClient, resolveImageUrl } from '../../api/client';
+import { apiClient } from '../../api/client';
 
 export function NotesSection({ items, api, pushToast, onConfirm }: { items: any[]; api: ReturnType<typeof useTopicWorkspace>; pushToast: any; onConfirm: (c: { id: string; action: string }) => void }) {
   const [search, setSearch] = useState('');
@@ -35,46 +35,19 @@ export function NotesSection({ items, api, pushToast, onConfirm }: { items: any[
     if (fileRef.current) fileRef.current.value = '';
   };
 
-  const uploadFile = async (file: File): Promise<string> => {
+  const uploadFile = async (file: File): Promise<{ url: string; publicId: string }> => {
     setUploading(true);
-    const token = window.localStorage.getItem('prepnest_token');
-    const baseURL = apiClient.defaults.baseURL;
-    console.log('=== UPLOAD DEBUG (before request) ===');
-    console.log('[Upload] REQUEST URL:', `${baseURL}/files/upload`);
-    console.log('[Upload] Authorization header present:', !!token);
-    console.log('[Upload] File name:', file.name);
-    console.log('[Upload] File type:', file.type);
-    console.log('[Upload] File size (bytes):', file.size);
-    console.log('[Upload] withCredentials:', (apiClient.defaults as any).withCredentials);
     const form = new FormData();
     form.append('file', file);
-    console.log('[Upload] FormData entries:');
-    for (const pair of (form as any).entries()) {
-      console.log('  ', pair[0], ':', pair[1] instanceof File ? `File(name=${pair[1].name}, type=${pair[1].type}, size=${pair[1].size})` : pair[1]);
-    }
     try {
       const response = await apiClient.post('/files/upload', form, {
         timeout: 120000, // 2 min — mobile uploads can be slow
       });
-      console.log('=== UPLOAD DEBUG (after request) ===');
-      console.log('[Upload] HTTP status:', response.status);
-      console.log('[Upload] Response body:', JSON.stringify(response.data, null, 2));
-      console.log('=== UPLOAD SUCCESS ===');
-      return response.data.url;
+      const secureUrl = response.data.secureUrl || response.data.url;
+      console.log('[Upload] SUCCESS:', secureUrl, 'publicId:', response.data.publicId);
+      return { url: secureUrl, publicId: response.data.publicId };
     } catch (err: any) {
-      console.error('=== UPLOAD DEBUG (error) ===');
-      console.error('[Upload] Axios error.code:', err.code);
-      console.error('[Upload] Axios error.message:', err.message);
-      console.error('[Upload] Axios error.response?.status:', err.response?.status);
-      console.error('[Upload] Axios error.response?.data:', JSON.stringify(err.response?.data, null, 2));
-      console.error('[Upload] Axios error.request (exists?):', !!err.request);
-      if (err.request && !err.response) {
-        console.error('[Upload] REQUEST WAS SENT but no response received (CORS / DNS / network down / mixed content)');
-      } else if (!err.request) {
-        console.error('[Upload] REQUEST WAS NEVER SENT (setup error / mixed content block)');
-      }
-      console.error('[Upload] Full error config:', err.config ? { url: err.config.url, method: err.config.method, baseURL: err.config.baseURL, headers: err.config.headers, withCredentials: err.config.withCredentials } : 'N/A');
-      console.error('=== UPLOAD FAILED ===');
+      console.error('[Upload] FAILED:', err.message, err.response?.status, JSON.stringify(err.response?.data));
       throw err;
     } finally {
       setUploading(false);
@@ -86,11 +59,14 @@ export function NotesSection({ items, api, pushToast, onConfirm }: { items: any[
     setBusy(true);
     try {
       let finalPdfUrl = pdfUrl;
+      let finalPdfPublicId: string | null = null;
       if (pdfFile) {
         console.log('[Submit] Uploading file:', pdfFile.name, pdfFile.type, pdfFile.size);
-        finalPdfUrl = await uploadFile(pdfFile);
+        const res = await uploadFile(pdfFile);
+        finalPdfUrl = res.url;
+        finalPdfPublicId = res.publicId;
       }
-      const body: any = { title: title.trim(), pdfUrl: finalPdfUrl || null, isPublished };
+      const body: any = { title: title.trim(), pdfUrl: finalPdfUrl || null, pdfPublicId: finalPdfPublicId, isPublished };
       console.log('[Submit] Saving note:', body);
       if (editId) {
         await api.updateNewNote(editId, body);
@@ -146,7 +122,7 @@ export function NotesSection({ items, api, pushToast, onConfirm }: { items: any[
 
   const startPreview = (id: string) => {
     const note = items.find((n: any) => n.id === id);
-    if (note?.pdfUrl) setPreviewUrl(resolveImageUrl(note.pdfUrl));
+    if (note?.pdfUrl) setPreviewUrl(note.pdfUrl);
   };
 
   const startDelete = (id: string) => {

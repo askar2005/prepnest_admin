@@ -8,6 +8,7 @@ import { useTopicWorkspace, type PyqItem } from './useTopicWorkspace';
 import { DeleteConfirmationModal } from '../../components/common/DeleteConfirmationModal';
 import { SearchBar } from '../../components/common/SearchBar';
 import { PYQCard } from '../../components/common/PYQCard';
+import { apiClient } from '../../api/client';
 
 export function PyqsSection({ items, api, pushToast, onConfirm }: { items: PyqItem[]; api: ReturnType<typeof useTopicWorkspace>; pushToast: any; onConfirm: (c: { id: string; action: string }) => void }) {
   const [showForm, setShowForm] = useState(false);
@@ -25,14 +26,25 @@ export function PyqsSection({ items, api, pushToast, onConfirm }: { items: PyqIt
   const paged = filtered.slice((page - 1) * perPage, page * perPage);
   const totalPages = Math.ceil(filtered.length / perPage);
 
-  const fileToDataUrl = (f: File): Promise<string> => new Promise((resolve, reject) => { const r = new FileReader(); r.onload = () => resolve(String(r.result)); r.onerror = reject; r.readAsDataURL(f); });
+  const uploadPdf = async (file: File): Promise<{ url: string; publicId: string }> => {
+    const form = new FormData();
+    form.append('file', file);
+    const response = await apiClient.post('/files/upload', form, { timeout: 120000 });
+    const secureUrl = response.data.secureUrl || response.data.url;
+    console.log('[PYQ-Upload] SUCCESS:', secureUrl, 'publicId:', response.data.publicId);
+    return { url: secureUrl, publicId: response.data.publicId };
+  };
 
   const submit = async () => {
     if (!title.trim() || !year) return;
     setBusy(true);
     try {
       const body: any = { year: Number(year), title: title.trim(), description: desc.trim() || null };
-      if (pdfFile) body.pdfUrl = await fileToDataUrl(pdfFile);
+      if (pdfFile) {
+        const res = await uploadPdf(pdfFile);
+        body.pdfUrl = res.url;
+        body.pdfPublicId = res.publicId;
+      }
       await api.createPyq(body);
       pushToast('PYQ added', 'success');
       setTitle(''); setYear(new Date().getFullYear()); setPdfFile(null); setShowForm(false);

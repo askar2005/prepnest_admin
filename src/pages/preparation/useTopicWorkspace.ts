@@ -76,8 +76,8 @@ export function useTopicWorkspace(category: string, topicId: string) {
       const { items } = await fetch<{ items: NoteItem[]; total: number }>(`/topics/${topicId}/notes`);
       return items;
     },
-    createNewNote: (body: { title: string; pdfUrl?: string | null; isPublished?: boolean }) => mutate<NoteItem>('post', `/topics/${topicId}/notes`, body),
-    updateNewNote: (id: string, body: { title?: string; pdfUrl?: string | null; isPublished?: boolean }) => mutate<NoteItem>('put', `/notes/${id}`, body),
+    createNewNote: (body: { title: string; pdfUrl?: string | null; pdfPublicId?: string | null; isPublished?: boolean }) => mutate<NoteItem>('post', `/topics/${topicId}/notes`, body),
+    updateNewNote: (id: string, body: { title?: string; pdfUrl?: string | null; pdfPublicId?: string | null; isPublished?: boolean }) => mutate<NoteItem>('put', `/notes/${id}`, body),
     deleteNewNote: (id: string) => mutate('delete', `/notes/${id}`),
   };
 }
