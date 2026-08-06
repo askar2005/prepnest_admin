@@ -18,7 +18,7 @@ export interface TopicDetail {
 export interface NoteItem { id: string; title: string; pdfUrl: string | null; isPublished: boolean; createdAt: string; }
 export interface McqItem { id: string; question: string; optionA: string; optionB: string; optionC: string; optionD: string; correctOption: string; explanation: string | null; difficulty: string | null; isPublished: boolean; createdAt: string; }
 export interface VideoItem { id: string; title: string; youtubeUrl: string; thumbnail: string | null; duration: number | null; description: string | null; tags: string | null; createdAt: string; }
-export interface PyqItem { id: string; year: number; title: string; pdfUrl: string | null; description: string | null; }
+export interface PyqItem { id: string; year: number; title: string; pdfUrl: string | null; pdfPublicId?: string | null; description: string | null; isPublished: boolean; createdAt: string; }
 export interface MockTestItem { id: string; title: string; description: string; durationMinutes: number; negativeMarking: number; publishStatus: string; createdAt: string; _count: { questions: number; results: number }; }
 export interface ResourceItem { id: string; title: string; type: string; content: string | null; externalUrl: string | null; createdAt: string; }
 export interface TopicAnalyticsData { totalAttempts: number; averageScore: number; highestScore: number; popularNotes: { title: string; createdAt: string; type: string }[]; popularVideos: { title: string; createdAt: string; views: number }[]; }
@@ -63,6 +63,7 @@ export function useTopicWorkspace(category: string, topicId: string) {
     deleteVideo: (id: string) => mutate('delete', `${base}/videos/${id}`),
     getPyqs: () => fetch<{ items: PyqItem[]; total: number }>(`${base}/pyqs`),
     createPyq: (body: any) => mutate('post', `${base}/pyqs`, body),
+    updatePyq: (id: string, body: any) => mutate('put', `${base}/pyqs/${id}`, body),
     deletePyq: (id: string) => mutate('delete', `${base}/pyqs/${id}`),
     getMockTests: () => fetch<{ items: MockTestItem[]; total: number }>(`${base}/mock-tests`),
     createMockTest: (body: any) => mutate('post', `${base}/mock-tests`, body),

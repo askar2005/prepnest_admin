@@ -24,22 +24,17 @@ export function AdminShell() {
   const navigate = useNavigate();
 
   if (!token) {
-    console.log('[ADMIN-SHELL] no token, redirecting to /login');
     return <Navigate to="/login" replace />;
   }
 
   const handleLogout = async () => {
-    console.log('[ADMIN-SHELL] handleLogout called');
     try {
-      console.log('[ADMIN-SHELL] calling POST /admin/logout');
       await apiClient.post('/admin/logout');
-      console.log('[ADMIN-SHELL] backend logout successful');
     } catch (err) {
-      console.log('[ADMIN-SHELL] backend logout error (ignoring):', err);
+      // backend logout is best-effort; clear locally regardless
     }
     localStorage.removeItem('prepnest_token');
     localStorage.removeItem('prepnest_user');
-    console.log('[ADMIN-SHELL] === LOGOUT COMPLETE === token removed, navigating to /login');
     navigate('/login', { replace: true });
   };
 

@@ -19,7 +19,6 @@ export function NotesSection({ items, api, pushToast, onConfirm }: { items: any[
   const [isPublished, setIsPublished] = useState(false);
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string | null }>({ open: false, id: null });
   const [duplicateModal, setDuplicateModal] = useState<{ open: boolean; note: any | null }>({ open: false, note: null });
   const fileRef = useRef<HTMLInputElement>(null);
@@ -44,10 +43,8 @@ export function NotesSection({ items, api, pushToast, onConfirm }: { items: any[
         timeout: 120000, // 2 min — mobile uploads can be slow
       });
       const secureUrl = response.data.secureUrl || response.data.url;
-      console.log('[Upload] SUCCESS:', secureUrl, 'publicId:', response.data.publicId);
       return { url: secureUrl, publicId: response.data.publicId };
     } catch (err: any) {
-      console.error('[Upload] FAILED:', err.message, err.response?.status, JSON.stringify(err.response?.data));
       throw err;
     } finally {
       setUploading(false);
@@ -61,13 +58,11 @@ export function NotesSection({ items, api, pushToast, onConfirm }: { items: any[
       let finalPdfUrl = pdfUrl;
       let finalPdfPublicId: string | null = null;
       if (pdfFile) {
-        console.log('[Submit] Uploading file:', pdfFile.name, pdfFile.type, pdfFile.size);
         const res = await uploadFile(pdfFile);
         finalPdfUrl = res.url;
         finalPdfPublicId = res.publicId;
       }
       const body: any = { title: title.trim(), pdfUrl: finalPdfUrl || null, pdfPublicId: finalPdfPublicId, isPublished };
-      console.log('[Submit] Saving note:', body);
       if (editId) {
         await api.updateNewNote(editId, body);
         pushToast('Note updated', 'success');
@@ -78,12 +73,6 @@ export function NotesSection({ items, api, pushToast, onConfirm }: { items: any[
       resetForm();
       refreshData();
     } catch (err: any) {
-      console.error('=== SUBMIT ERROR ===');
-      console.error('[Submit] Error code:', err.code);
-      console.error('[Submit] Error message:', err.message);
-      console.error('[Submit] Response status:', err.response?.status);
-      console.error('[Submit] Response data:', JSON.stringify(err.response?.data, null, 2));
-      console.error('[Submit] Request sent?', !!err.request, 'Response received?', !!err.response);
       let msg = err?.response?.data?.message || err?.response?.data?.error || '';
       if (!msg) {
         if (!err.request) msg = 'Request was blocked by browser (check Console for CORS/mixed content details)';
@@ -118,11 +107,6 @@ export function NotesSection({ items, api, pushToast, onConfirm }: { items: any[
       setDuplicateModal({ open: false, note: null });
     } catch (err: any) { pushToast(err?.response?.data?.message || err?.message || 'Duplicate failed', 'error'); }
     finally { setBusy(false); }
-  };
-
-  const startPreview = (id: string) => {
-    const note = items.find((n: any) => n.id === id);
-    if (note?.pdfUrl) setPreviewUrl(note.pdfUrl);
   };
 
   const startDelete = (id: string) => {
@@ -173,7 +157,6 @@ export function NotesSection({ items, api, pushToast, onConfirm }: { items: any[
               onEdit={startEdit}
               onDelete={startDelete}
               onDuplicate={startDuplicate}
-              onPreview={startPreview}
             />
           ))}
         </div>
@@ -206,7 +189,6 @@ export function NotesSection({ items, api, pushToast, onConfirm }: { items: any[
                     accept="application/pdf"
                     onChange={(e) => {
                       const f = e.target.files?.[0] || null;
-                      if (f) console.log('[FilePicker] selected:', { name: f.name, type: f.type, size: f.size });
                       setPdfFile(f);
                     }}
                     className="block w-full text-sm text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
@@ -227,18 +209,6 @@ export function NotesSection({ items, api, pushToast, onConfirm }: { items: any[
                 <Button variant="secondary" onClick={resetForm}>Cancel</Button>
               </div>
             </div>
-          </div>
-        </div>
-      )}
-
-      {previewUrl && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={() => setPreviewUrl(null)}>
-          <div className="w-full max-w-4xl h-[90vh] rounded-xl overflow-hidden bg-white" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-3 border-b border-slate-200 bg-slate-50">
-              <span className="text-sm font-medium text-slate-700">PDF Preview</span>
-              <button onClick={() => setPreviewUrl(null)} className="p-1 rounded-lg hover:bg-white text-slate-400"><X className="w-5 h-5" /></button>
-            </div>
-            <iframe src={previewUrl} className="w-full h-[calc(90vh-52px)]" title="PDF Preview" />
           </div>
         </div>
       )}

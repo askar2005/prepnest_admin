@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '../../components/common/ToastHost';
 import { useTopicWorkspace, type TopicDetail } from './useTopicWorkspace';
@@ -60,6 +60,17 @@ export default function TopicWorkspacePage() {
     pushToast('Deleted', 'success');
     qc.invalidateQueries({ queryKey: ['topic'] });
   }, [api, pushToast, qc]);
+
+  // Shared refresh used by all section components after create/update/delete
+  // so mutations appear immediately without a manual page reload.
+  useEffect(() => {
+    (window as any).__topicWorkspaceRefresh = () => {
+      qc.invalidateQueries({ queryKey: ['topic'] });
+    };
+    return () => {
+      delete (window as any).__topicWorkspaceRefresh;
+    };
+  }, [qc]);
 
   const CATEGORY_LABELS: Record<string, string> = { gate: 'GATE', aptitude: 'Aptitude', interview: 'Interview', technical: 'Technical' };
   const catName = CATEGORY_LABELS[category || ''] || category?.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) || '';

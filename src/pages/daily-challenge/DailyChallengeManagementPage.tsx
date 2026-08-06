@@ -88,7 +88,6 @@ export default function DailyChallengeManagementPage() {
       correctAnswer,
       explanation: explanation.trim() || null,
     };
-    console.log('Daily Challenge Payload', payload);
 
     const missing: Record<string, string> = {};
     if (!payload.question) missing.question = 'Question is required';

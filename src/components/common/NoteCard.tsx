@@ -1,14 +1,14 @@
 import { Edit3, Trash2, Copy, Eye, FileText } from 'lucide-react';
+import { openPdf } from '../../lib/openPdf';
 
 export interface NoteCardProps {
   note: any;
   onEdit: (note: any) => void;
   onDelete: (id: string) => void;
   onDuplicate: (note: any) => void;
-  onPreview: (id: string) => void;
 }
 
-export function NoteCard({ note, onEdit, onDelete, onDuplicate, onPreview }: NoteCardProps) {
+export function NoteCard({ note, onEdit, onDelete, onDuplicate }: NoteCardProps) {
   const hasPdf = !!note.pdfUrl;
   const publishedColor = note.isPublished ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700';
   return (
@@ -21,7 +21,7 @@ export function NoteCard({ note, onEdit, onDelete, onDuplicate, onPreview }: Not
         <div className="flex items-center gap-4 text-xs text-slate-500"><span className="flex items-center gap-1"><FileText className="w-3 h-3" />{hasPdf ? 'PDF' : 'No file'}</span></div>
       </div>
       <div className="p-3 bg-slate-50 flex flex-wrap gap-2 justify-end">
-        {hasPdf && <button onClick={() => onPreview(note.id)} className="p-1.5 rounded-lg hover:bg-white text-slate-600 hover:text-slate-900 transition-colors touch-target" title="Preview"><Eye className="w-4 h-4" /></button>}
+        {hasPdf && <button onClick={() => openPdf(note.pdfUrl)} className="p-1.5 rounded-lg hover:bg-white text-slate-600 hover:text-slate-900 transition-colors touch-target" title="Preview"><Eye className="w-4 h-4" /></button>}
         <button onClick={() => onEdit(note)} className="p-1.5 rounded-lg hover:bg-white text-slate-600 hover:text-slate-900 transition-colors touch-target" title="Edit"><Edit3 className="w-4 h-4" /></button>
         <button onClick={() => onDuplicate(note)} className="p-1.5 rounded-lg hover:bg-white text-slate-600 hover:text-slate-900 transition-colors touch-target" title="Duplicate"><Copy className="w-4 h-4" /></button>
         <button onClick={() => onDelete(note.id)} className="p-1.5 rounded-lg hover:bg-white text-red-600 hover:text-red-700 transition-colors touch-target" title="Delete"><Trash2 className="w-4 h-4" /></button>

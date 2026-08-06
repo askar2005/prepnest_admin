@@ -12,50 +12,49 @@ export function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const submittingRef = useRef(false);
+  // Refs are the source of truth at submit time: browser autofill can update the
+  // DOM without firing React onChange, leaving state stale — reading the live DOM
+  // value defeats that race (a common cause of intermittent 401s).
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
   const sessionExpired = window.sessionStorage.getItem('prepnest_session_expired');
   if (sessionExpired) window.sessionStorage.removeItem('prepnest_session_expired');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('[LOGIN-PAGE] handleSubmit called');
     if (submittingRef.current) {
-      console.log('[LOGIN-PAGE] DUPLICATE SUBMIT BLOCKED — already submitting');
       return;
     }
+    const liveEmail = (emailRef.current?.value ?? form.email).trim();
+    const livePassword = passwordRef.current?.value ?? form.password;
     setError('');
-    if (!form.email.trim()) { setError('Email is required'); return; }
-    if (!form.password) { setError('Password is required'); return; }
+    if (!liveEmail) { setError('Email is required'); return; }
+    if (!livePassword) { setError('Password is required'); return; }
     setLoading(true);
     submittingRef.current = true;
-    console.log('[LOGIN-PAGE] sending POST /admin/login — email:', form.email);
     try {
-      const { data } = await apiClient.post('/admin/login', form);
-      console.log('[LOGIN-PAGE] === LOGIN SUCCESS === token stored, admin:', data.admin?.email);
+      const { data } = await apiClient.post('/admin/login', { email: liveEmail, password: livePassword });
       window.localStorage.setItem('prepnest_token', data.token);
       window.localStorage.setItem('prepnest_user', JSON.stringify(data.admin));
-      console.log('[LOGIN-PAGE] === REDIRECT === navigating to /');
       navigate('/');
     } catch (err: any) {
       const status = err?.response?.status;
       const details = err?.response?.data?.details;
       const serverMsg = err?.response?.data?.message;
-      console.log('[LOGIN-PAGE] === LOGIN FAILED === status:', status, 'message:', serverMsg, 'details:', details);
-      console.log('[LOGIN-PAGE] request URL:', err?.config?.url);
-      console.log('[LOGIN-PAGE] response data:', JSON.stringify(err?.response?.data));
-      console.log('[LOGIN-PAGE] full error:', err);
       let msg = serverMsg || 'Login failed';
       if (details && typeof details === 'object') {
         const msgs = Object.values(details).flat().join('; ');
         if (msgs) msg = msgs;
       }
       if (status === 403 && serverMsg?.includes('verify your email')) {
-        console.log('[LOGIN-PAGE] email not verified, redirecting to /verify-email');
-        navigate(`/verify-email?email=${encodeURIComponent(form.email)}`);
+        navigate(`/verify-email?email=${encodeURIComponent(liveEmail)}`);
         return;
+      }
+      if (status === 401) {
+        msg = 'Invalid email or password. Double-check for a typo or trailing space.';
       }
       setError(msg);
     } finally {
-      console.log('[LOGIN-PAGE] login attempt finished');
       setLoading(false);
       submittingRef.current = false;
     }
@@ -76,12 +75,12 @@ export function LoginPage() {
         ) : null}
         <label className="block space-y-1.5">
           <span className="text-sm font-medium text-slate-700">Email</span>
-          <Input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} type="email" placeholder="admin@example.com" />
+          <Input ref={emailRef} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} type="email" placeholder="admin@example.com" autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} />
         </label>
         <label className="block space-y-1.5">
           <span className="text-sm font-medium text-slate-700">Password</span>
           <div className="relative">
-            <Input value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} type={showPassword ? 'text' : 'password'} placeholder="Enter password" className="pr-10" />
+            <Input ref={passwordRef} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} type={showPassword ? 'text' : 'password'} placeholder="Enter password" className="pr-10" autoComplete="current-password" autoCapitalize="none" autoCorrect="off" spellCheck={false} />
             <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
