@@ -30,7 +30,7 @@ export function AdminShell() {
   const handleLogout = async () => {
     try {
       await apiClient.post('/admin/logout');
-    } catch (err) {
+    } catch {
       // backend logout is best-effort; clear locally regardless
     }
     localStorage.removeItem('prepnest_token');

@@ -5,7 +5,7 @@ import { TextArea } from '../../components/ui/TextArea';
 import { Select } from '../../components/ui/Select';
 import { useToast } from '../../components/common/ToastHost';
 import { useTopicWorkspace, type MockTestItem } from './useTopicWorkspace';
-import { Plus, Trash2, Copy, ChevronUp, ChevronDown, Eye, Send, Save, Calendar } from 'lucide-react';
+import { Plus, Trash2, Copy, ChevronUp, ChevronDown, Send, Save, Calendar } from 'lucide-react';
 
 interface QForm {
   id: string; question: string; questionType: string; optionA: string; optionB: string; optionC: string; optionD: string;

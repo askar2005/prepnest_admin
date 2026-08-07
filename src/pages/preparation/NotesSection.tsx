@@ -1,14 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
-import { useTopicWorkspace, type NoteItem } from './useTopicWorkspace';
+import { useTopicWorkspace } from './useTopicWorkspace';
 import { DeleteConfirmationModal } from '../../components/common/DeleteConfirmationModal';
 import { SearchBar } from '../../components/common/SearchBar';
 import { NoteCard } from '../../components/common/NoteCard';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
-import { Plus, FileText, Upload, X, Loader2 } from 'lucide-react';
+import { Plus, FileText, X, Loader2 } from 'lucide-react';
 import { apiClient } from '../../api/client';
 
-export function NotesSection({ items, api, pushToast, onConfirm }: { items: any[]; api: ReturnType<typeof useTopicWorkspace>; pushToast: any; onConfirm: (c: { id: string; action: string }) => void }) {
+export function NotesSection({ items, api, pushToast, onConfirm: _onConfirm }: { items: any[]; api: ReturnType<typeof useTopicWorkspace>; pushToast: any; onConfirm: (c: { id: string; action: string }) => void }) {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
@@ -44,8 +44,6 @@ export function NotesSection({ items, api, pushToast, onConfirm }: { items: any[
       });
       const secureUrl = response.data.secureUrl || response.data.url;
       return { url: secureUrl, publicId: response.data.publicId };
-    } catch (err: any) {
-      throw err;
     } finally {
       setUploading(false);
     }

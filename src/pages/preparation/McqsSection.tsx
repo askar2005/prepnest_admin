@@ -3,11 +3,10 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { TextArea } from '../../components/ui/TextArea';
 import { Select } from '../../components/ui/Select';
-import { Plus, Edit3, Trash2, Copy, ChevronDown, ChevronRight, Save, List, CheckSquare, Loader2 } from 'lucide-react';
+import { Plus, Trash2, Copy, ChevronDown, ChevronRight, Save, List, CheckSquare, Loader2 } from 'lucide-react';
 import { useToast } from '../../components/common/ToastHost';
 import { useTopicWorkspace, type McqItem } from './useTopicWorkspace';
 import { DeleteConfirmationModal } from '../../components/common/DeleteConfirmationModal';
-import { SearchBar } from '../../components/common/SearchBar';
 import { MCQCard } from '../../components/common/MCQCard';
 
 interface QuestionDraft {
@@ -31,7 +30,7 @@ function freshQuestion(): QuestionDraft {
 
 export function McqsSection({ items, api }: { items: McqItem[]; api: ReturnType<typeof useTopicWorkspace> }) {
   const { pushToast } = useToast();
-  const [search, setSearch] = useState('');
+  const [search] = useState('');
   const [page, setPage] = useState(1);
   const [showBuilder, setShowBuilder] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);

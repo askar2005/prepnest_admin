@@ -7,7 +7,7 @@ import { TextArea } from '../../components/ui/TextArea';
 import { ConfirmDialog } from '../../components/common/ConfirmDialog';
 import { useToast } from '../../components/common/ToastHost';
 import {
-  Plus, Edit3, Trash2, Copy, Archive, Eye, Search, X, Send, CheckCircle2, Zap, Flame, FileQuestion,
+  Plus, Edit3, Trash2, Copy, Archive, Eye, Search, X, Send, CheckCircle2, Flame, FileQuestion,
 } from 'lucide-react';
 
 type Challenge = {
@@ -38,7 +38,7 @@ function fmtDate(d: string | null) {
 export default function DailyChallengeManagementPage() {
   const { pushToast } = useToast();
   const [challenges, setChallenges] = useState<Challenge[]>([]);
-  const [total, setTotal] = useState(0);
+  const [, setTotal] = useState(0);
   const [counts, setCounts] = useState<Counts>({ queue: 0, published: 0, archived: 0 });
   const [today, setToday] = useState<Today>({ published: false, id: null, question: null });
   const [loading, setLoading] = useState(true);

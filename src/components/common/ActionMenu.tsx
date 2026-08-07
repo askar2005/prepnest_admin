@@ -1,4 +1,4 @@
-import { MoreVertical, Edit3, Copy, Trash2, Eye } from 'lucide-react';
+import { MoreVertical } from 'lucide-react';
 import { useState } from 'react';
 
 type Action = {
@@ -14,7 +14,7 @@ type Props = {
   itemName?: string;
 };
 
-export function ActionMenu({ actions, itemName }: Props) {
+export function ActionMenu({ actions, itemName: _itemName }: Props) {
   const [open, setOpen] = useState(false);
 
   const handleAction = (action: Action, e: React.MouseEvent) => {

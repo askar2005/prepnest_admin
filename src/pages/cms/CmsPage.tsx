@@ -41,6 +41,7 @@ export function CmsPage() {
 
   useEffect(() => {
     load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resource, query, page]);
 
   useEffect(() => {

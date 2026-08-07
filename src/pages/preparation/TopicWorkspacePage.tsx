@@ -10,9 +10,8 @@ import MockTestBuilderSection from './MockTestBuilderSection';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { TextArea } from '../../components/ui/TextArea';
-import { Select } from '../../components/ui/Select';
 import { ConfirmDialog } from '../../components/common/ConfirmDialog';
-import { ArrowLeft, BarChart3, BookOpen, CheckSquare, Video, FileText, ClipboardList, Puzzle, Settings, ExternalLink, Trash2, Edit3, Plus, Upload, Download, RefreshCw } from 'lucide-react';
+import { ArrowLeft, BarChart3, BookOpen, CheckSquare, Video, FileText, ClipboardList, Puzzle, Settings, Plus } from 'lucide-react';
 
 const TABS = [
   { key: 'dashboard', label: 'Dashboard', icon: BarChart3 },
@@ -46,12 +45,12 @@ export default function TopicWorkspacePage() {
 
   const { data: topic } = useQuery({ queryKey: ['topic', topicId], queryFn: () => api.getTopic(), staleTime: 60000 });
   const { data: dashboard, isLoading: dLoading } = useQuery({ queryKey: ['topic-dash', topicId], queryFn: () => api.getDashboard(), enabled: tab === 'dashboard' });
-  const { data: notes, isLoading: notesLoading } = useQuery({ queryKey: ['topic-notes', topicId], queryFn: () => api.getNewNotes(), enabled: tab === 'notes' });
-  const { data: mcqs, isLoading: mcqsLoading } = useQuery({ queryKey: ['topic-mcqs', topicId], queryFn: () => api.getMcqs().then(d => d.items), enabled: tab === 'mcqs' });
-  const { data: videos, isLoading: videosLoading } = useQuery({ queryKey: ['topic-videos', topicId], queryFn: () => api.getVideos().then(d => d.items), enabled: tab === 'videos' });
-  const { data: pyqs, isLoading: pyqsLoading } = useQuery({ queryKey: ['topic-pyqs', topicId], queryFn: () => api.getPyqs().then(d => d.items), enabled: tab === 'pyqs' });
-  const { data: mockTests, isLoading: mockTestsLoading } = useQuery({ queryKey: ['topic-mocktests', topicId], queryFn: () => api.getMockTests().then(d => d.items), enabled: tab === 'mock-tests' });
-  const { data: resources, isLoading: resourcesLoading } = useQuery({ queryKey: ['topic-resources', topicId], queryFn: () => api.getResources().then(d => d.items), enabled: tab === 'resources' });
+  const { data: notes } = useQuery({ queryKey: ['topic-notes', topicId], queryFn: () => api.getNewNotes(), enabled: tab === 'notes' });
+  const { data: mcqs } = useQuery({ queryKey: ['topic-mcqs', topicId], queryFn: () => api.getMcqs().then(d => d.items), enabled: tab === 'mcqs' });
+  const { data: videos } = useQuery({ queryKey: ['topic-videos', topicId], queryFn: () => api.getVideos().then(d => d.items), enabled: tab === 'videos' });
+  const { data: pyqs } = useQuery({ queryKey: ['topic-pyqs', topicId], queryFn: () => api.getPyqs().then(d => d.items), enabled: tab === 'pyqs' });
+  const { data: mockTests } = useQuery({ queryKey: ['topic-mocktests', topicId], queryFn: () => api.getMockTests().then(d => d.items), enabled: tab === 'mock-tests' });
+  const { data: resources } = useQuery({ queryKey: ['topic-resources', topicId], queryFn: () => api.getResources().then(d => d.items), enabled: tab === 'resources' });
   const { data: analytics, isLoading: aLoading } = useQuery({ queryKey: ['topic-analytics', topicId], queryFn: () => api.getAnalytics(), enabled: tab === 'analytics' });
 
   const deleteItem = useCallback(async (id: string, action: string) => {

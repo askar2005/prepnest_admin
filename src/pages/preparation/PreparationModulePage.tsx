@@ -59,7 +59,10 @@ export default function PreparationModulePage() {
     settings: () => load(api.getSettings, setSettings),
   };
 
-  useEffect(() => { loaders[tab]?.(); }, [tab, category]);
+  useEffect(() => {
+    loaders[tab]?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, category]);
 
   const onTabChange = (k: string) => setTab(k);
 
@@ -251,7 +254,7 @@ function SettingsSection({ data, api, pushToast }: { data: CategorySettings; api
 
   const handleRemoveImage = async () => {
     try {
-      const updated = await api.deleteCategoryImage();
+      await api.deleteCategoryImage();
       setCoverImage('');
       pushToast('Cover image removed', 'success');
     } catch (err: any) { pushToast(err?.response?.data?.message || 'Failed', 'error'); }

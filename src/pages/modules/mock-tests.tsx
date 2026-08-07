@@ -151,7 +151,7 @@ export function validateQuestions(questions: QuestionDraft[]): string[] {
 export default function MockTestsPage() {
   const { pushToast } = useToast();
   const [tests, setTests] = useState<MockTestItem[]>([]);
-  const [total, setTotal] = useState(0);
+  const [, setTotal] = useState(0);
   const [counts, setCounts] = useState<Counts>({ total: 0, drafts: 0, published: 0, archived: 0 });
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<Array<{ id: string; name: string }>>([]);
@@ -727,7 +727,6 @@ function PreviewModal({ testId, onClose }: { testId: string; onClose: () => void
 
             <div className="space-y-4">
               {(test.questions || []).map((q, idx) => {
-                const qObj = { ...q };
                 return (
                   <div key={q.localId || idx} className="rounded-xl border border-slate-200 p-4 space-y-3">
                     <div className="flex items-start justify-between gap-2">

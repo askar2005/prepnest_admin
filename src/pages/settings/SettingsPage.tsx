@@ -5,7 +5,7 @@ import { useToast } from '../../components/common/ToastHost';
 import { ConfirmDialog } from '../../components/common/ConfirmDialog';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
-import { Eye, EyeOff, Camera, Shield, LogOut, Info, Mail, Github, Globe, Clock, BookOpen, Server, Lock, FileText, HelpCircle, CheckCircle, XCircle, User } from 'lucide-react';
+import { Eye, EyeOff, Camera, Shield, LogOut, Info, Mail, Github, Globe, BookOpen, Server, Lock, FileText, HelpCircle, CheckCircle, XCircle, User } from 'lucide-react';
 
 type AdminProfile = {
   id: string; fullName: string; email: string; role: string; isVerified: boolean;
@@ -65,7 +65,7 @@ export function SettingsPage() {
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [showLogoutAllDialog, setShowLogoutAllDialog] = useState(false);
   const [showSidebarLogout, setShowSidebarLogout] = useState(false);
-  const [loggingOut, setLoggingOut] = useState(false);
+  const [, setLoggingOut] = useState(false);
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -385,7 +385,7 @@ export function SettingsPage() {
       </div>
 
       <ConfirmDialog open={showLogoutDialog} title="Logout" message="Are you sure you want to logout from PrepNest Admin?" confirmLabel="Logout" onConfirm={() => { setShowLogoutDialog(false); handleLogout(); }} onCancel={() => setShowLogoutDialog(false)} />
-      <ConfirmDialog open={showLogoutAllDialog} title="Logout All Devices" message="This will logout all active sessions. You will need to login again on every device." confirmLabel="Logout All" onConfirm={async () => { setShowLogoutAllDialog(false); try { await apiClient.post('/admin/logout-all'); } catch {} handleLogout(); }} onCancel={() => setShowLogoutAllDialog(false)} />
+      <ConfirmDialog open={showLogoutAllDialog} title="Logout All Devices" message="This will logout all active sessions. You will need to login again on every device." confirmLabel="Logout All" onConfirm={async () => { setShowLogoutAllDialog(false); try { await apiClient.post('/admin/logout-all'); } catch { /* intentionally ignored */ } handleLogout(); }} onCancel={() => setShowLogoutAllDialog(false)} />
       <ConfirmDialog open={showSidebarLogout} title="Logout" message="Are you sure you want to logout from PrepNest Admin?" confirmLabel="Logout" onConfirm={() => { setShowSidebarLogout(false); handleLogout(); }} onCancel={() => setShowSidebarLogout(false)} />
     </div>
   );

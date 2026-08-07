@@ -1,4 +1,4 @@
-import { Edit3, Trash2, Copy, CheckSquare } from 'lucide-react';
+import { Edit3, Trash2, Copy } from 'lucide-react';
 
 export interface MCQCardProps {
   mcq: any;

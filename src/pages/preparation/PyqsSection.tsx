@@ -10,7 +10,7 @@ import { Plus, FileText, X, Loader2 } from 'lucide-react';
 import { apiClient } from '../../api/client';
 import { downloadPdf } from '../../lib/downloadPdf';
 
-export function PyqsSection({ items, api, pushToast, onConfirm }: { items: PyqItem[]; api: ReturnType<typeof useTopicWorkspace>; pushToast: any; onConfirm: (c: { id: string; action: string }) => void }) {
+export function PyqsSection({ items, api, pushToast, onConfirm: _onConfirm }: { items: PyqItem[]; api: ReturnType<typeof useTopicWorkspace>; pushToast: any; onConfirm: (c: { id: string; action: string }) => void }) {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
@@ -46,8 +46,6 @@ export function PyqsSection({ items, api, pushToast, onConfirm }: { items: PyqIt
       const response = await apiClient.post('/files/upload', form, { timeout: 120000 });
       const secureUrl = response.data.secureUrl || response.data.url;
       return { url: secureUrl, publicId: response.data.publicId };
-    } catch (err: any) {
-      throw err;
     } finally {
       setUploading(false);
     }
@@ -142,7 +140,7 @@ export function PyqsSection({ items, api, pushToast, onConfirm }: { items: PyqIt
               pyq={p}
               onEdit={startEdit}
               onDelete={startDelete}
-              onDownload={(pyq) => { try { downloadPdf(pyq.pdfUrl, `${pyq.year}_${pyq.title}.pdf`); } catch {} }}
+              onDownload={(pyq) => { try { downloadPdf(pyq.pdfUrl, `${pyq.year}_${pyq.title}.pdf`); } catch { /* intentionally ignored */ } }}
             />
           ))}
         </div>

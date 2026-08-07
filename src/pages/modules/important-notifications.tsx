@@ -5,7 +5,7 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Select } from '../../components/ui/Select';
 import { TextArea } from '../../components/ui/TextArea';
-import { Plus, Search, Edit3, Trash2, Eye, Copy, Archive, Send, ChevronLeft, ChevronRight, Megaphone, FileText, Link2, Image, Paperclip, Calendar, Clock, Pin, Flag, Users, CheckCircle, XCircle, AlertTriangle, Filter } from 'lucide-react';
+import { Plus, Search, Edit3, Trash2, Copy, Archive, Send, ChevronLeft, ChevronRight, Megaphone, Filter } from 'lucide-react';
 
 const CATEGORIES = ['PLACEMENT_DRIVES', 'INTERNSHIPS', 'HACKATHONS', 'WORKSHOP', 'EXAM_UPDATES', 'SCHOLARSHIPS', 'COLLEGE_ANNOUNCEMENTS', 'COMPANY_HIRING', 'GENERAL'];
 const PRIORITIES = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'];
